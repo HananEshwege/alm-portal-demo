@@ -325,6 +325,13 @@ b.strong { color: var(--text); font-weight: 600; }
   border-radius: 999px; background: var(--accent-bg); color: var(--accent);
   font-weight: 500;
 }
+.cond-tag {
+  display: inline-block; font-size: 11px; padding: 2px 8px;
+  border-radius: 999px; font-weight: 500;
+}
+.cond-excellent { background: var(--success-bg); color: var(--success); }
+.cond-good { background: var(--accent-bg); color: var(--accent); }
+.cond-fair { background: var(--warn-bg); color: var(--warn); }
 .tbl .empty-row td { text-align: center; color: var(--text-2); font-size: 12px; padding: 14px; }
 
 .action-bar {
@@ -673,18 +680,19 @@ b.strong { color: var(--text); font-weight: 600; }
 
 .return-list { padding: 0 20px 20px; }
 .return-tbl-h {
-  display: grid; grid-template-columns: 2fr 1.4fr 1fr 1fr;
+  display: grid; grid-template-columns: 1.8fr 1.4fr 0.9fr 1fr 1fr;
   gap: 10px; padding: 8px 14px;
   font-size: 11px; color: var(--text-2);
   text-transform: uppercase; letter-spacing: 0.3px;
   font-weight: 600;
 }
 .return-row {
-  display: grid; grid-template-columns: 2fr 1.4fr 1fr 1fr;
+  display: grid; grid-template-columns: 1.8fr 1.4fr 0.9fr 1fr 1fr;
   gap: 10px; padding: 10px 14px;
   border: 1px solid var(--border);
   border-radius: 10px; margin-bottom: 6px; font-size: 13px;
   background: var(--bg);
+  align-items: center;
 }
 .return-row .device { font-weight: 500; }
 .return-row .serial { color: var(--text-2); font-size: 12px; }
@@ -936,12 +944,15 @@ function genDevices(custId) {
     const prefix = String.fromCharCode(76 + (i % 14));
     const num = ((i * 37) % 90) + 10;
     const variant = isMacBook ? '' : (i % 3 === 1 ? ' 128' : ' 256');
+    const condRoll = (i * 17 + 3) % 10;
+    const condition = condRoll < 3 ? 'Excellent' : (condRoll < 9 ? 'Good' : 'Fair');
     devices.push({
       serial: 'F2' + prefix + num + '···' + seed,
       device: opp.model + variant,
       ends: opp.daysToEnd + (i % 5),
       rv, payoff, tradeIn,
-      equity: tradeIn - payoff
+      equity: tradeIn - payoff,
+      condition
     });
   }
   _deviceCache[custId] = { devices, total: count };
@@ -1127,7 +1138,7 @@ function renderDevicesPage() {
         ${opps.map(o => {
           const c = customers[o.customerId];
           const isOpen = o.customerId === state.activeCustomer;
-          return `<div class="opp ${isOpen ? 'open' : ''}" data-cust="${o.customerId}"><div class="cust-mark ${c.mark}">${c.initial}</div><div class="opp-mid"><div class="opp-name"><span class="urgency-badge ${urgencyClass(o.daysToEnd)}">${o.daysToEnd} d</span>${c.name}</div><div class="opp-sub">${o.count} ${o.model} · "${o.condition}" condition</div></div><div class="opp-eq"><div class="opp-eq-val">+${fmt(o.equity)}</div><div class="opp-eq-lbl">Net positive equity</div></div><button class="btn-sm ${isOpen ? 'ghost' : ''}" data-cust="${o.customerId}">${isOpen ? 'Open' : 'Review'}</button></div>`;
+          return `<div class="opp ${isOpen ? 'open' : ''}" data-cust="${o.customerId}"><div class="cust-mark ${c.mark}">${c.initial}</div><div class="opp-mid"><div class="opp-name"><span class="urgency-badge ${urgencyClass(o.daysToEnd)}">${o.daysToEnd} d</span>${c.name}</div><div class="opp-sub">${o.count} ${o.model} · "${o.condition}" condition</div></div><div class="opp-eq"><div class="opp-eq-val">+${fmt(o.equity)}</div><div class="opp-eq-lbl">Net positive equity</div></div>${isOpen ? '' : `<button class="btn-sm" data-cust="${o.customerId}">Review</button>`}</div>`;
         }).join('')}
       </div>
     </div>
@@ -1156,10 +1167,10 @@ function renderDevicesPage() {
           <table class="tbl">
             <thead><tr>
               <th style="width:24px"><input type="checkbox" id="selectAll" ${devices.every(d => state.selectedSerials.has(d.serial)) ? 'checked' : ''}></th>
-              <th>Serial</th><th>Device</th><th>Ends in</th><th>RV</th><th>Payoff</th><th>Trade-in</th><th>Equity</th><th>Lender</th>
+              <th>Serial</th><th>Device</th><th>Condition</th><th>Ends in</th><th>RV</th><th>Payoff</th><th>Trade-in</th><th>Equity</th><th>Lender</th>
             </tr></thead>
             <tbody>
-              ${devices.map(d => `<tr><td><input type="checkbox" data-serial="${d.serial}" ${state.selectedSerials.has(d.serial) ? 'checked' : ''}></td><td>${d.serial}</td><td>${d.device}</td><td>${d.ends} d</td><td>${fmt(d.rv)}</td><td>${fmt(d.payoff)}</td><td>${fmt(d.tradeIn)}</td><td class="pos">+${fmt(d.equity)}</td><td><span class="lender-tag">JPM</span></td></tr>`).join('')}
+              ${devices.map(d => `<tr><td><input type="checkbox" data-serial="${d.serial}" ${state.selectedSerials.has(d.serial) ? 'checked' : ''}></td><td>${d.serial}</td><td>${d.device}</td><td><span class="cond-tag cond-${d.condition.toLowerCase()}">${d.condition}</span></td><td>${d.ends} d</td><td>${fmt(d.rv)}</td><td>${fmt(d.payoff)}</td><td>${fmt(d.tradeIn)}</td><td class="pos">+${fmt(d.equity)}</td><td><span class="lender-tag">JPM</span></td></tr>`).join('')}
             </tbody>
           </table>
         </div>
@@ -1223,7 +1234,7 @@ function renderNewDealCard() {
   const quoteUploaded = state.quoteState === 'uploaded';
 
   return `
-    <div class="card" style="margin-top:18px">
+    <div class="card" id="newDealSection" style="margin-top:18px;scroll-margin-top:80px">
       <div class="section-h">
         <div class="section-h-l"><span class="dot" style="background:var(--warn)"></span>New deal · upgrade <span class="proposal-tag" style="margin-left:8px">Proposal #${PROPOSAL_ID}</span></div>
         <span class="tiny" id="dealAutoSave">${submitted ? 'Submitted just now' : 'Auto-saved just now'}</span>
@@ -1433,8 +1444,8 @@ function renderPending() {
     <div class="card" style="margin-bottom:16px">
       <div class="section-h"><div class="section-h-l">Devices being returned</div><span class="tiny">${totals.count} ${oldDevice}</span></div>
       <div class="return-list">
-        <div class="return-tbl-h"><div>Device</div><div>Serial</div><div>Trade-in</div><div>Outstanding</div></div>
-        ${showSel.map(d => `<div class="return-row"><div class="device">${d.device}</div><div class="serial">${d.serial}</div><div>${fmt(d.tradeIn)}</div><div>${fmt(d.payoff)}</div></div>`).join('')}
+        <div class="return-tbl-h"><div>Device</div><div>Serial</div><div>Condition</div><div>Trade-in</div><div>Outstanding</div></div>
+        ${showSel.map(d => `<div class="return-row"><div class="device">${d.device}</div><div class="serial">${d.serial}</div><div><span class="cond-tag cond-${d.condition.toLowerCase()}">${d.condition}</span></div><div>${fmt(d.tradeIn)}</div><div>${fmt(d.payoff)}</div></div>`).join('')}
         ${hiddenCount > 0 ? `<div style="text-align:center;color:var(--text-2);font-size:12px;padding:10px">+ ${hiddenCount} more devices</div>` : ''}
       </div>
     </div>
@@ -1510,8 +1521,8 @@ function renderPending() {
               </div>
             </div>
             <div class="ds-action">
-              <input type="text" id="sigInput" placeholder="Type your full name to adopt and sign" value="${state.signatureName}" />
-              <button class="ds-sign-btn" id="signBtn" ${!state.signatureName ? 'disabled' : ''}>Adopt and sign</button>
+              <input type="text" id="sigInput" placeholder="Type your full name to agree and sign" value="${state.signatureName}" />
+              <button class="ds-sign-btn" id="signBtn" ${!state.signatureName ? 'disabled' : ''}>Agree and Sign</button>
             </div>
             <div class="ds-foot">Signed via DocuSign · An audit trail will be emailed to all parties.</div>
           </div>
@@ -1708,6 +1719,10 @@ document.addEventListener('click', (e) => {
     state.amount = 0;
     state.monthlyCalculated = null;
     render();
+    setTimeout(() => {
+      const el = document.getElementById('newDealSection');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 30);
     showToast('Deal draft created · upload the reseller quote to continue');
     return;
   }
