@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Device Lifecycle Management for Businesses</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #FFFFFF; --bg-2: #F5F5F7; --bg-3: #FAFAFB;
+  --text: #1D1D1F; --text-2: #6E6E73; --text-3: #A1A1A6;
+  --border: rgba(0,0,0,0.08); --border-2: rgba(0,0,0,0.18);
+  --accent: #0066CC; --accent-bg: #E8F1FB;
+  --success: #00875A; --success-bg: #E6F4EC;
+  --danger: #C53030; --danger-bg: #FBE8E8;
+  --warn: #B45309; --warn-bg: #FCEFD9;
+  --purple: #6E59E0; --purple-bg: #EFEBFD;
+  --teal: #0F8F7B; --teal-bg: #E1F4F0;
+  --ds-yellow: #FFCC00; --ds-yellow-2: #FFE680; --ds-orange: #F4A100;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg-2); color: var(--text);
+  font-size: 14px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.apple-logo {
+  width: 14px; height: 14px;
+  fill: currentColor;
+  display: inline-block;
+}
+.apple-logo svg { width: 100%; height: 100%; display: block; }
+
+.global-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.global-inner {
+  max-width: 1400px; margin: 0 auto;
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 20px;
+}
+.brand-mark {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: #1D1D1F; color: white;
+  display: flex; align-items: center; justify-content: center;
+}
+.brand-mark .apple-logo { width: 14px; height: 16px; }
+.brand-name { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; line-height: 1.2; }
+.brand-sub { font-size: 12px; color: var(--text-2); }
+
+.app-switcher {
+  margin-left: auto;
+  display: inline-flex;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 999px; padding: 3px;
+}
+.app-switcher button {
+  background: transparent; border: none;
+  padding: 6px 14px; font-size: 12px;
+  color: var(--text-2); cursor: pointer;
+  border-radius: 999px; font-weight: 500;
+  transition: all 0.15s; font-family: inherit;
+}
+.app-switcher button.on {
+  background: var(--bg); color: var(--text);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.portal {
+  max-width: 1400px; margin: 0 auto;
+  display: grid; grid-template-columns: 240px 1fr;
+  min-height: calc(100vh - 53px);
+}
+.sidebar {
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  padding: 24px 12px;
+  position: sticky; top: 53px;
+  height: calc(100vh - 53px);
+  overflow-y: auto;
+}
+.sb-section {
+  font-size: 11px; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.6px;
+  font-weight: 600; padding: 8px 10px 6px;
+}
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 8px;
+  color: var(--text-2); font-size: 13px;
+  cursor: pointer; transition: all 0.1s;
+  margin-bottom: 2px; user-select: none;
+}
+.sb-item:hover { background: var(--bg-2); color: var(--text); }
+.sb-item.on { background: var(--bg-2); color: var(--text); font-weight: 600; }
+.sb-icon {
+  width: 16px; height: 16px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bg-2); border-radius: 4px;
+  font-size: 10px; font-weight: 600; color: var(--text-2);
+}
+.sb-count {
+  margin-left: auto; font-size: 11px;
+  background: var(--bg-2); color: var(--text-2);
+  padding: 1px 8px; border-radius: 999px;
+}
+.sb-item.on .sb-count { background: var(--text); color: white; }
+
+.main-area { padding: 28px 32px 60px; min-width: 0; }
+.main-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 22px; gap: 16px; flex-wrap: wrap;
+}
+.main-title { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; margin: 0 0 4px; }
+.main-sub { font-size: 13px; color: var(--text-2); margin: 0; }
+
+.user-chip {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 6px 12px 6px 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+.user-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--accent-bg); color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+}
+.user-name { font-size: 12px; font-weight: 500; }
+.user-role { font-size: 11px; color: var(--text-2); }
+
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: visible;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 8px 24px rgba(0,0,0,0.04);
+}
+
+.tiny { font-size: 12px; color: var(--text-2); }
+b.strong { color: var(--text); font-weight: 600; }
+
+.section-h {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px 8px; flex-wrap: wrap; gap: 8px;
+}
+.section-h-l { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.subhead { font-size: 12px; color: var(--text-2); padding: 0 20px 14px; }
+
+.card-body { padding: 0 20px 20px; }
+.card-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 20px; gap: 12px;
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 16px 16px;
+}
+
+.proposal-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 999px;
+  background: var(--bg-2); color: var(--text-2);
+  font-size: 11px; font-weight: 600;
+  font-family: ui-monospace, "SF Mono", Consolas, monospace;
+}
+
+.sort-control { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-2); position: relative; }
+.sort-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 5px 10px;
+  font-size: 12px; color: var(--text);
+  font-weight: 500; cursor: pointer;
+  transition: all 0.15s; font-family: inherit;
+}
+.sort-btn:hover { border-color: var(--border-2); }
+.sort-btn .caret { color: var(--text-3); font-size: 10px; }
+.sort-btn.open { border-color: var(--text); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+
+.opp {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.opp:hover { border-color: var(--border-2); transform: translateY(-1px); }
+.opp.open { border-color: var(--text); background: var(--bg-3); }
+.cust-mark {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; flex-shrink: 0;
+}
+.cm-blue { background: var(--accent-bg); color: var(--accent); }
+.cm-purple { background: var(--purple-bg); color: var(--purple); }
+.cm-teal { background: var(--teal-bg); color: var(--teal); }
+.cm-warn { background: var(--warn-bg); color: var(--warn); }
+.opp-mid { flex: 1; min-width: 0; }
+.opp-name { font-size: 14px; font-weight: 600; line-height: 1.2; display: flex; align-items: center; gap: 8px; }
+.opp-sub { font-size: 12px; color: var(--text-2); margin-top: 3px; }
+.opp-eq { text-align: right; flex-shrink: 0; }
+.opp-eq-val { font-size: 15px; font-weight: 600; color: var(--success); }
+.opp-eq-lbl { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+.urgency-badge {
+  display: inline-flex; align-items: center; padding: 2px 8px;
+  border-radius: 999px; background: var(--warn-bg); color: var(--warn);
+  font-size: 11px; font-weight: 600;
+}
+.urgency-badge.crit { background: var(--danger-bg); color: var(--danger); }
+
+.btn-sm {
+  background: #1D1D1F; color: white;
+  border: none; padding: 7px 14px;
+  border-radius: 8px; font-size: 13px; font-weight: 500;
+  cursor: pointer; flex-shrink: 0;
+  transition: opacity 0.15s, transform 0.1s;
+  font-family: inherit;
+}
+.btn-sm:hover { opacity: 0.85; }
+.btn-sm:active { transform: scale(0.98); }
+.btn-sm.ghost { background: transparent; color: var(--text); border: 1px solid var(--border-2); }
+.btn-sm.ghost:hover { background: var(--bg-2); }
+.btn-sm.danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+.btn-sm.danger:hover { background: var(--danger-bg); }
+
+.divider { height: 1px; background: var(--border); margin: 22px 0; }
+
+.detail-h { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.detail-h .cust-mark { width: 32px; height: 32px; font-size: 12px; }
+.detail-name { font-size: 14px; font-weight: 600; }
+.detail-sub { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+
+.filters {
+  display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+  padding: 10px 12px; background: var(--bg-2);
+  border-radius: 10px; margin-bottom: 14px;
+  position: relative; overflow: visible;
+}
+.chip-wrap { position: relative; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px; padding: 5px 11px;
+  font-size: 12px; cursor: pointer;
+  transition: all 0.15s; user-select: none;
+}
+.chip:hover { border-color: var(--border-2); }
+.chip-k { color: var(--text-2); }
+.chip-v { color: var(--text); font-weight: 500; }
+.chip.dashed { border-style: dashed; color: var(--text-2); }
+.chip.open { border-color: var(--text); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+.chip .caret { color: var(--text-3); font-size: 10px; margin-left: 2px; }
+
+.popover {
+  position: absolute; top: calc(100% + 6px); left: 0;
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+  border-radius: 12px;
+  box-shadow: 0 10px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+  padding: 6px; min-width: 220px; z-index: 50;
+}
+.popover.right { left: auto; right: 0; }
+.pop-head {
+  font-size: 11px; color: var(--text-2);
+  padding: 6px 10px 4px; font-weight: 500;
+  letter-spacing: 0.3px; text-transform: uppercase;
+}
+.pop-opt {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 8px;
+  font-size: 13px; cursor: pointer;
+  transition: background 0.1s; user-select: none;
+}
+.pop-opt:hover { background: var(--bg-2); }
+.pop-opt.sel { color: var(--accent); font-weight: 500; }
+.pop-opt .check {
+  width: 14px; height: 14px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent); font-size: 13px;
+}
+.pop-divider { height: 1px; background: var(--border); margin: 4px 6px; }
+
+.tbl-wrap {
+  overflow: auto;
+  max-height: 380px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl thead th {
+  position: sticky; top: 0;
+  background: var(--bg);
+  z-index: 1;
+  box-shadow: inset 0 -1px 0 var(--border);
+}
+.tbl th {
+  text-align: left; padding: 10px 8px; font-weight: 500;
+  color: var(--text-2); font-size: 12px;
+  white-space: nowrap;
+}
+.tbl td {
+  padding: 12px 8px; border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.tbl tbody tr:hover { background: var(--bg-3); }
+.tbl tr:last-child td { border-bottom: none; }
+.pos { color: var(--success); font-weight: 600; }
+.lender-tag {
+  display: inline-block; font-size: 12px; padding: 3px 9px;
+  border-radius: 999px; background: var(--accent-bg); color: var(--accent);
+  font-weight: 500;
+}
+.tbl .empty-row td { text-align: center; color: var(--text-2); font-size: 12px; padding: 14px; }
+
+.action-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 16px; margin-top: 14px;
+  border-top: 1px solid var(--border);
+  gap: 12px; flex-wrap: wrap;
+}
+.summary { font-size: 13px; color: var(--text-2); }
+
+.btn-p {
+  background: #1D1D1F; color: white; border: none;
+  padding: 9px 18px; border-radius: 10px;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+  font-family: inherit;
+}
+.btn-p:hover { opacity: 0.85; }
+.btn-p:active { transform: scale(0.98); }
+.btn-p:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-g {
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border-2);
+  padding: 9px 18px; border-radius: 10px;
+  font-size: 14px; cursor: pointer;
+  transition: all 0.15s; font-family: inherit;
+}
+.btn-g:hover { background: var(--bg-2); }
+.btn-success {
+  background: var(--success); color: white; border: none;
+  padding: 9px 18px; border-radius: 10px;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: opacity 0.15s; font-family: inherit;
+}
+.btn-success:hover { opacity: 0.9; }
+
+.step { padding: 18px 20px; border-bottom: 1px solid var(--border); }
+.step:last-of-type { border-bottom: none; }
+.step-h { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.step-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--bg-2); color: var(--text-2);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+}
+.step-num.done { background: var(--success-bg); color: var(--success); }
+.step-num.active { background: var(--accent-bg); color: var(--accent); }
+.step-t { font-size: 14px; font-weight: 600; }
+.step-help { font-size: 12px; color: var(--text-2); margin-left: auto; }
+.step-body { padding-left: 32px; font-size: 13px; }
+
+.upload-zone {
+  border: 1.5px dashed var(--border-2);
+  border-radius: 12px; padding: 24px;
+  background: var(--bg-2); color: var(--text-2);
+  font-size: 13px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s;
+  text-align: center; gap: 8px;
+}
+.upload-zone:hover {
+  border-color: var(--accent); background: var(--accent-bg); color: var(--accent);
+}
+.upload-zone .upload-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--bg); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--text-2);
+}
+.upload-zone strong { color: var(--text); font-weight: 600; }
+
+.upload-progress {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.spin {
+  width: 18px; height: 18px;
+  border: 2px solid var(--border-2); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.uploaded {
+  background: var(--success-bg); color: var(--success);
+  border: 1px solid var(--success);
+  border-radius: 12px; padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.uploaded-icon {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--success); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; flex-shrink: 0;
+}
+.uploaded-meta { flex: 1; }
+.uploaded-name { font-size: 13px; font-weight: 600; }
+.uploaded-sub { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+.uploaded-actions { display: flex; gap: 8px; }
+.btn-link {
+  background: transparent; color: var(--success);
+  border: 1px solid var(--success);
+  padding: 6px 12px; border-radius: 8px;
+  font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit;
+}
+.btn-link:hover { background: var(--success); color: white; }
+
+.rollup {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-top: 12px;
+}
+.mc {
+  background: var(--bg-2);
+  border-radius: 10px; padding: 12px 14px;
+}
+.mc-label { font-size: 12px; color: var(--text-2); margin-bottom: 6px; }
+.mc-val { font-size: 20px; font-weight: 600; line-height: 1.1; letter-spacing: -0.3px; }
+.rollup .mc { background: var(--bg); border: 1px solid var(--border); }
+.equity-big {
+  font-size: 24px; font-weight: 600; color: var(--success);
+  letter-spacing: -0.4px;
+}
+
+.row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 12px; color: var(--text-2); }
+.field .val {
+  font-size: 13px; padding: 9px 12px;
+  background: var(--bg-2);
+  border-radius: 8px; border: 1px solid var(--border);
+}
+.field select, .field input {
+  font-size: 13px; padding: 9px 12px;
+  background: var(--bg);
+  border-radius: 8px; border: 1px solid var(--border-2);
+  font-family: inherit; color: var(--text);
+  outline: none; transition: border-color 0.15s;
+}
+.field select:focus, .field input:focus { border-color: var(--accent); }
+
+.calc-row {
+  display: grid;
+  grid-template-columns: 2fr 0.7fr 1fr 0.9fr auto;
+  gap: 12px;
+  align-items: end;
+  margin-top: 4px;
+}
+.calc-result {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px;
+  margin-top: 14px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;
+}
+.calc-cell-l { font-size: 11px; color: var(--text-2); }
+.calc-cell-v { font-size: 18px; font-weight: 600; margin-top: 4px; letter-spacing: -0.3px; }
+.calc-cell-v.pos { color: var(--success); }
+.calc-cell-v.big { font-size: 22px; }
+.calc-empty { color: var(--text-3); font-style: italic; font-size: 13px; }
+
+.lender-eval {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.lender-eval-head {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--text-2);
+  text-transform: uppercase; letter-spacing: 0.4px;
+  font-weight: 600; margin-bottom: 10px;
+}
+.lender-eval-list {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+.lender-eval-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 8px;
+  background: var(--bg); border: 1px solid var(--border);
+  font-size: 12px;
+}
+.lender-eval-item.win {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+  font-weight: 600;
+}
+.lender-eval-item .check {
+  font-size: 14px; flex-shrink: 0;
+}
+.lender-eval-item .rate {
+  margin-left: auto; font-family: ui-monospace, monospace;
+  font-size: 11px; opacity: 0.7;
+}
+
+.lender-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--success);
+  border-radius: 10px;
+}
+.lender-mark {
+  width: 32px; height: 32px; border-radius: 7px;
+  background: var(--accent-bg); color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; flex-shrink: 0;
+}
+.lender-info { flex: 1; }
+.lender-name { font-size: 14px; font-weight: 600; }
+.lender-status { font-size: 12px; color: var(--success); margin-top: 2px; }
+.win-badge {
+  background: var(--success); color: white;
+  padding: 3px 9px; border-radius: 999px;
+  font-size: 11px; font-weight: 600;
+}
+
+.flow {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap; margin-top: 8px;
+}
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 12px;
+  background: var(--bg-2); color: var(--text-2);
+  transition: background 0.2s, color 0.2s;
+}
+.pill.done { background: var(--success-bg); color: var(--success); }
+.pill.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+.arr { color: var(--text-3); font-size: 12px; }
+
+.note {
+  background: var(--accent-bg); color: var(--accent);
+  border-radius: 10px;
+  padding: 10px 14px; font-size: 13px; margin: 10px 0;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.note .i {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent); color: white;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+
+.success-banner {
+  display: none;
+  background: var(--success-bg); color: var(--success);
+  border-radius: 12px; padding: 14px 18px;
+  margin: 0 20px 16px; align-items: center; gap: 12px;
+  border: 1px solid var(--success);
+}
+.success-banner.on { display: flex; }
+.success-banner .i {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--success); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; flex-shrink: 0;
+}
+.success-banner-t { font-size: 14px; font-weight: 600; }
+.success-banner-d { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: #1D1D1F; color: white;
+  padding: 12px 18px; border-radius: 10px;
+  font-size: 13px; font-weight: 500;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  opacity: 0; transform: translateY(10px);
+  transition: all 0.2s; pointer-events: none;
+  z-index: 200;
+}
+.toast.on { opacity: 1; transform: translateY(0); }
+
+.cust-list { display: flex; flex-direction: column; gap: 8px; }
+.cust-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px; border: 1px solid var(--border);
+  border-radius: 12px; cursor: pointer;
+  transition: all 0.15s;
+}
+.cust-row:hover { border-color: var(--border-2); transform: translateY(-1px); }
+.cust-name { font-size: 14px; font-weight: 600; }
+.cust-meta { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+.cust-tier {
+  display: inline-block; font-size: 11px; padding: 2px 8px;
+  border-radius: 999px; font-weight: 500;
+}
+.tier-strategic { background: var(--purple-bg); color: var(--purple); }
+.tier-enterprise { background: var(--teal-bg); color: var(--teal); }
+
+.search-wrap { position: relative; margin-bottom: 14px; }
+.search-input {
+  width: 100%; padding: 10px 14px 10px 38px;
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 10px; font-size: 13px; outline: none;
+  font-family: inherit; transition: border-color 0.15s;
+}
+.search-input:focus { border-color: var(--accent); background: var(--bg); }
+.search-icon {
+  position: absolute; left: 14px; top: 50%;
+  transform: translateY(-50%); color: var(--text-3);
+}
+
+.deal-row {
+  display: grid; grid-template-columns: 1.2fr 2fr 1.5fr 0.8fr 1.5fr 1fr;
+  align-items: center; gap: 12px;
+  padding: 12px 16px; border: 1px solid var(--border);
+  border-radius: 10px; margin-bottom: 6px; font-size: 13px;
+}
+.deal-row:hover { border-color: var(--border-2); }
+.deal-id { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: 12px; color: var(--text-2); }
+.deal-status {
+  display: inline-block; font-size: 11px; padding: 3px 10px;
+  border-radius: 999px; font-weight: 500;
+}
+.ds-pending { background: var(--warn-bg); color: var(--warn); }
+.ds-progress { background: var(--accent-bg); color: var(--accent); }
+.ds-done { background: var(--success-bg); color: var(--success); }
+.ds-draft { background: var(--bg-2); color: var(--text-2); }
+
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-2); font-size: 13px; }
+
+/* Customer portal */
+.proposal-hero {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  padding: 20px;
+}
+.proposal-side {
+  background: var(--bg-2);
+  border-radius: 12px; padding: 16px 18px;
+}
+.proposal-side h3 {
+  font-size: 13px; color: var(--text-2);
+  margin: 0 0 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.4px;
+}
+.proposal-side .big {
+  font-size: 24px; font-weight: 600;
+  letter-spacing: -0.4px; margin-bottom: 4px;
+}
+.proposal-side .sub { font-size: 12px; color: var(--text-2); }
+
+.return-list { padding: 0 20px 20px; }
+.return-tbl-h {
+  display: grid; grid-template-columns: 2fr 1.4fr 1fr 1fr;
+  gap: 10px; padding: 8px 14px;
+  font-size: 11px; color: var(--text-2);
+  text-transform: uppercase; letter-spacing: 0.3px;
+  font-weight: 600;
+}
+.return-row {
+  display: grid; grid-template-columns: 2fr 1.4fr 1fr 1fr;
+  gap: 10px; padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px; margin-bottom: 6px; font-size: 13px;
+  background: var(--bg);
+}
+.return-row .device { font-weight: 500; }
+.return-row .serial { color: var(--text-2); font-size: 12px; }
+
+.cost-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--bg-2); border-radius: 12px; overflow: hidden;
+}
+.cost-table tr td {
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.cost-table tr:last-child td {
+  font-weight: 600; font-size: 15px; border-bottom: none;
+  background: var(--bg);
+}
+.cost-table tr td:last-child { text-align: right; }
+
+/* DocuSign sign experience */
+.ds-frame {
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+  border-radius: 12px; overflow: hidden;
+}
+.ds-toolbar {
+  background: linear-gradient(180deg, #FFFAE5, #FFF4CC);
+  padding: 10px 16px; display: flex; align-items: center;
+  gap: 12px; border-bottom: 1px solid var(--ds-orange);
+}
+.ds-logo {
+  background: var(--ds-yellow); color: #1D1D1F;
+  padding: 4px 10px; border-radius: 4px;
+  font-weight: 700; font-size: 12px; letter-spacing: -0.2px;
+}
+.ds-toolbar-meta { font-size: 12px; color: #6B5800; flex: 1; font-weight: 500; }
+.ds-doc {
+  padding: 24px; background: #FAFAFB;
+  border-bottom: 1px solid var(--border);
+  min-height: 220px;
+}
+.ds-paper {
+  background: white; border: 1px solid var(--border);
+  border-radius: 4px; padding: 24px 28px;
+  font-size: 12px; color: #2C2C2A; line-height: 1.6;
+  max-width: 600px; margin: 0 auto;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.ds-paper h4 { margin: 0 0 8px; font-size: 14px; font-weight: 700; }
+.ds-paper .clause { margin: 6px 0; }
+.ds-sig-tag {
+  position: absolute;
+  background: var(--ds-yellow);
+  color: #1D1D1F;
+  padding: 4px 10px;
+  border-radius: 3px 3px 0 0;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.ds-sig-tag::after {
+  content: ''; position: absolute; left: 0; top: 100%;
+  border-left: 6px solid transparent;
+  border-top: 6px solid var(--ds-yellow);
+}
+.ds-sig-area {
+  border-top: 1px solid #1D1D1F;
+  margin-top: 32px; padding-top: 6px;
+  display: flex; gap: 20px; font-size: 11px; color: var(--text-2);
+}
+.ds-sig-line {
+  font-family: 'Brush Script MT', cursive;
+  font-size: 22px; color: var(--text);
+  font-style: italic; min-height: 28px;
+}
+.ds-sig-line.signed { color: var(--success); }
+.ds-action {
+  padding: 16px; background: white;
+  display: flex; align-items: center; gap: 12px;
+}
+.ds-action input {
+  flex: 1; padding: 10px 14px;
+  border: 1px solid var(--border-2);
+  border-radius: 6px; font-size: 13px;
+  font-family: inherit; outline: none;
+}
+.ds-action input:focus { border-color: var(--ds-orange); }
+.ds-sign-btn {
+  background: var(--ds-yellow); color: #1D1D1F;
+  border: 1px solid var(--ds-orange);
+  padding: 10px 20px; border-radius: 6px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+  transition: all 0.15s;
+}
+.ds-sign-btn:hover { background: var(--ds-orange); color: white; }
+.ds-sign-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ds-foot {
+  padding: 8px 16px; font-size: 11px; color: var(--text-3);
+  background: var(--bg-2); text-align: center;
+  border-top: 1px solid var(--border);
+}
+
+/* Quote modal */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none; align-items: center; justify-content: center;
+  z-index: 300; padding: 24px;
+}
+.modal-overlay.on { display: flex; }
+.modal-card {
+  background: var(--bg);
+  border-radius: 16px;
+  max-width: 760px; width: 100%;
+  max-height: 90vh; overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+}
+.modal-header h2 { margin: 0; font-size: 15px; font-weight: 600; }
+.modal-close {
+  background: transparent; border: none;
+  width: 28px; height: 28px;
+  font-size: 22px; cursor: pointer;
+  color: var(--text-2); border-radius: 6px;
+  font-family: inherit;
+}
+.modal-close:hover { background: var(--bg-2); color: var(--text); }
+.modal-body { padding: 24px; overflow-y: auto; }
+
+.quote-page {
+  background: white; border: 1px solid var(--border);
+  border-radius: 4px; padding: 32px;
+  font-size: 12px; line-height: 1.6;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.quote-header {
+  display: flex; justify-content: space-between;
+  border-bottom: 2px solid #1D1D1F; padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+.quote-reseller { font-size: 12px; }
+.quote-reseller strong { font-size: 14px; }
+.quote-meta { font-size: 11px; color: var(--text-2); text-align: right; }
+.quote-customer { margin-bottom: 20px; font-size: 12px; }
+.quote-items {
+  width: 100%; border-collapse: collapse;
+  margin-bottom: 16px; font-size: 12px;
+}
+.quote-items th, .quote-items td {
+  text-align: left; padding: 8px 6px;
+  border-bottom: 1px solid var(--border);
+}
+.quote-items th { background: var(--bg-2); font-weight: 600; }
+.quote-items td:nth-child(3), .quote-items td:nth-child(4), .quote-items td:nth-child(5) { text-align: right; }
+.quote-items th:nth-child(3), .quote-items th:nth-child(4), .quote-items th:nth-child(5) { text-align: right; }
+.quote-totals { text-align: right; font-size: 12px; line-height: 1.8; }
+.quote-totals strong { font-size: 14px; }
+.quote-foot {
+  margin-top: 20px; padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px; color: var(--text-2);
+}
+
+input[type="checkbox"] { accent-color: #1D1D1F; cursor: pointer; }
+
+@media (max-width: 1100px) { .portal { grid-template-columns: 200px 1fr; } }
+@media (max-width: 820px) {
+  .portal { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; padding: 12px; }
+  .main-area { padding: 18px; }
+  .row-grid, .rollup, .proposal-hero, .calc-row { grid-template-columns: 1fr; }
+  .deal-row, .return-row, .return-tbl-h { grid-template-columns: 1fr 1fr; gap: 6px; padding: 10px 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="global-bar">
+  <div class="global-inner">
+    <div class="brand-mark"><span class="apple-logo"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" fill="white"/></svg></span></div>
+    <div>
+      <div class="brand-name">Device Lifecycle Management for Businesses</div>
+      <div class="brand-sub">Powered by Jifiti</div>
+    </div>
+    <div class="app-switcher" id="appSwitcher">
+      <button class="on" data-app="reseller">Reseller portal</button>
+      <button data-app="customer">Customer portal</button>
+    </div>
+  </div>
+</div>
+
+<div id="portalRoot"></div>
+<div class="modal-overlay" id="quoteModal"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const APPLE_LOGO_SVG = '<span class="apple-logo"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" fill="white"/></svg></span>';
+
+const customers = {
+  acme: { id: 'acme', name: 'Acme Corp', orgId: '18439', tier: 'Strategic', activeDevices: 142, contact: 'Maya Rodriguez · VP IT', mark: 'cm-blue', initial: 'A' },
+  globex: { id: 'globex', name: 'Globex Inc.', orgId: '20871', tier: 'Enterprise', activeDevices: 89, contact: 'James Park · IT Director', mark: 'cm-purple', initial: 'G' },
+  initech: { id: 'initech', name: 'Initech', orgId: '15523', tier: 'Enterprise', activeDevices: 67, contact: 'Lisa Chen · CIO', mark: 'cm-teal', initial: 'I' },
+  umbrella: { id: 'umbrella', name: 'Umbrella Corp', orgId: '21044', tier: 'Strategic', activeDevices: 234, contact: 'Albert W. · VP IT', mark: 'cm-warn', initial: 'U' }
+};
+
+const opportunities = [
+  { customerId: 'acme', model: 'iPhone 15 Pro', count: 50, daysToEnd: 28, equity: 7250, condition: 'Good', newDevice: 'iPhone 17 Pro 256GB', unitPrice: 1199 },
+  { customerId: 'globex', model: 'iPhone 15', count: 25, daysToEnd: 41, equity: 3400, condition: 'Good or better', newDevice: 'iPhone 17 256GB', unitPrice: 999 },
+  { customerId: 'initech', model: 'MacBook Air M2', count: 18, daysToEnd: 67, equity: 1850, condition: 'Good', newDevice: 'MacBook Air M4 13" 256GB', unitPrice: 1299 }
+];
+
+const _deviceCache = {};
+function genDevices(custId) {
+  if (_deviceCache[custId]) return _deviceCache[custId];
+  const opp = opportunities.find(o => o.customerId === custId);
+  if (!opp) return { devices: [], total: 0 };
+  const isMacBook = opp.model.includes('MacBook');
+  const isPro = opp.model.includes('Pro');
+  const count = opp.count;
+  const targetTradeIn = (isMacBook ? 850 : (isPro ? 725 : 620)) * count;
+  const targetPayoff = targetTradeIn - opp.equity;
+  const targetRV = (isMacBook ? 720 : (isPro ? 530 : 450)) * count;
+  const baseRV = targetRV / count;
+  const basePayoff = targetPayoff / count;
+  const baseTradeIn = targetTradeIn / count;
+  const seeds = ['Q4X8','K72A','B19P','D55T','H03L','M88R','N21Y','J47W','L62E','C09S','R74G','T18B','Y56V','U93F','P40K','X22D','Z67M','A85L','B12N','S99H','D33P','E77Q','F44J','G29W','H66R','I12K','J88M','K55N','L23T','M91X','N67Y','O44Z','P12A','Q89B','R56C','S23D','T90E','U67F','V34G','W01H','X78I','Y45J','Z12K','A89L','B56M','C23N','D90O','E67P','F34Q','G01R'];
+  let cumRV = 0, cumPayoff = 0, cumTradeIn = 0;
+  const devices = [];
+  for (let i = 0; i < count; i++) {
+    let rv, payoff, tradeIn;
+    if (i === count - 1) {
+      rv = targetRV - cumRV;
+      payoff = targetPayoff - cumPayoff;
+      tradeIn = targetTradeIn - cumTradeIn;
+    } else {
+      const n1 = Math.sin(i * 0.713) * 25;
+      const n2 = Math.cos(i * 0.547) * 22;
+      const n3 = Math.sin(i * 0.391) * 30;
+      rv = Math.round(baseRV + n1);
+      payoff = Math.round(basePayoff + n2);
+      tradeIn = Math.round(baseTradeIn + n3);
+      cumRV += rv; cumPayoff += payoff; cumTradeIn += tradeIn;
+    }
+    const seed = seeds[i % seeds.length];
+    const prefix = String.fromCharCode(76 + (i % 14));
+    const num = ((i * 37) % 90) + 10;
+    const variant = isMacBook ? '' : (i % 3 === 1 ? ' 128' : ' 256');
+    devices.push({
+      serial: 'F2' + prefix + num + '···' + seed,
+      device: opp.model + variant,
+      ends: opp.daysToEnd + (i % 5),
+      rv, payoff, tradeIn,
+      equity: tradeIn - payoff
+    });
+  }
+  _deviceCache[custId] = { devices, total: count };
+  return _deviceCache[custId];
+}
+
+const deals = [
+  { id: 'D-2026-0148', customer: 'Acme Corp', type: 'Lease upgrade', count: 50, status: 'Customer approval', statusClass: 'ds-pending', updated: '2 min ago' },
+  { id: 'D-2026-0147', customer: 'Globex Inc.', type: 'Lease upgrade', count: 12, status: 'Lender contract', statusClass: 'ds-progress', updated: '1 hr ago' },
+  { id: 'D-2026-0145', customer: 'Initech', type: 'New lease', count: 30, status: 'Phobio shipping', statusClass: 'ds-progress', updated: '3 hr ago' },
+  { id: 'D-2026-0140', customer: 'Acme Corp', type: 'Lease upgrade', count: 25, status: 'Complete', statusClass: 'ds-done', updated: '2 days ago' }
+];
+
+const sortOptions = [
+  { id: 'urgency-equity', label: 'Urgency, then equity' },
+  { id: 'equity', label: 'Equity (highest first)' },
+  { id: 'count', label: 'Device count (highest)' },
+  { id: 'tier', label: 'Customer tier' }
+];
+const leaseEndOptions = [
+  { id: 30, label: '≤ 30 days' }, { id: 60, label: '≤ 60 days' },
+  { id: 90, label: '≤ 90 days' }, { id: 120, label: '≤ 120 days' },
+  { id: 'custom', label: 'Custom range…' }
+];
+const conditionOptions = [
+  { id: 'excellent', label: 'Excellent only' },
+  { id: 'good-or-better', label: 'Good or better' },
+  { id: 'fair-or-better', label: 'Fair or better' },
+  { id: 'all', label: 'All conditions' }
+];
+
+const lenderEvaluation = [
+  { id: 'jpm', name: 'JPM Equipment Finance', rate: '5.4% APR', win: true },
+  { id: 'citi', name: 'Citi Equipment', rate: '5.7% APR' },
+  { id: 'bofa', name: 'BofA Asset Finance', rate: '5.9% APR' },
+  { id: 'dll', name: 'DLL Group', rate: '6.1% APR' },
+  { id: 'capital', name: 'Capital One Bus.', rate: '6.3% APR' }
+];
+
+const PROPOSAL_ID = 'D-2026-0148';
+
+const state = {
+  app: 'reseller',
+  resellerNav: 'devices',
+  customerNav: 'pending',
+  activeCustomer: 'acme',
+  sortBy: 'urgency-equity',
+  filters: { leaseEnd: 30, condition: 'good-or-better' },
+  selectedSerials: new Set(),
+  dealStatus: 'none',
+  quoteState: 'empty',
+  amount: 0,
+  term: 24,
+  monthlyCalculated: null,
+  cfoStep: 'pending',
+  signatureName: '',
+  openPopover: null
+};
+
+function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove('on'), 2200);
+}
+
+function sortedOpportunities() {
+  const tierRank = { 'Strategic': 0, 'Enterprise': 1, 'SMB': 2 };
+  const arr = opportunities.slice();
+  arr.sort((a, b) => {
+    if (state.sortBy === 'urgency-equity') {
+      if (a.daysToEnd !== b.daysToEnd) return a.daysToEnd - b.daysToEnd;
+      return b.equity - a.equity;
+    }
+    if (state.sortBy === 'equity') return b.equity - a.equity;
+    if (state.sortBy === 'count') return b.count - a.count;
+    if (state.sortBy === 'tier') return tierRank[customers[a.customerId].tier] - tierRank[customers[b.customerId].tier];
+    return 0;
+  });
+  return arr;
+}
+function urgencyClass(d) { return d <= 30 ? 'crit' : ''; }
+
+function getDealTotals() {
+  const { devices } = genDevices(state.activeCustomer);
+  const sel = devices.filter(d => state.selectedSerials.has(d.serial));
+  const totalPayoff = sel.reduce((s, d) => s + d.payoff, 0);
+  const totalTradeIn = sel.reduce((s, d) => s + d.tradeIn, 0);
+  return {
+    count: sel.length,
+    payoff: totalPayoff,
+    tradeIn: totalTradeIn,
+    equity: totalTradeIn - totalPayoff,
+    sel
+  };
+}
+
+function getQuoteAmount() {
+  const opp = opportunities.find(o => o.customerId === state.activeCustomer);
+  if (!opp) return 0;
+  const totals = getDealTotals();
+  return opp.unitPrice * totals.count;
+}
+
+function calculateMonthly() {
+  const totals = getDealTotals();
+  if (!state.amount || !state.term || totals.count === 0) return null;
+  const net = state.amount - totals.equity;
+  const perDevice = net / state.term / totals.count;
+  return Math.max(5, Math.round(perDevice));
+}
+
+function setActiveCustomer(custId) {
+  state.activeCustomer = custId;
+  state.selectedSerials = new Set(genDevices(custId).devices.map(d => d.serial));
+  state.resellerNav = 'devices';
+  state.openPopover = null;
+  render();
+}
+
+function renderResellerSidebar() {
+  const items = [
+    { id: 'customers', label: 'Customers', icon: 'C', count: Object.keys(customers).length },
+    { id: 'devices', label: 'Devices', icon: 'D', count: opportunities.reduce((s, o) => s + o.count, 0) },
+    { id: 'deals', label: 'Deals', icon: 'P', count: deals.length },
+    { id: 'reports', label: 'Reports', icon: 'R' },
+    { id: 'settings', label: 'Settings', icon: 'S' }
+  ];
+  return `
+    <div class="sb-section">Workspace</div>
+    ${items.map(i => `<div class="sb-item ${i.id === state.resellerNav ? 'on' : ''}" data-nav="${i.id}"><span class="sb-icon">${i.icon}</span>${i.label}${i.count !== undefined ? `<span class="sb-count">${i.count}</span>` : ''}</div>`).join('')}
+    <div class="sb-section" style="margin-top:18px">Connections</div>
+    <div class="sb-item"><span class="sb-icon" style="background:var(--accent-bg);color:var(--accent)">A</span>Apkudo<span class="sb-count" style="background:var(--success-bg);color:var(--success)">●</span></div>
+    <div class="sb-item"><span class="sb-icon" style="background:var(--accent-bg);color:var(--accent)">J</span>JPM<span class="sb-count" style="background:var(--success-bg);color:var(--success)">●</span></div>
+    <div class="sb-item"><span class="sb-icon" style="background:var(--accent-bg);color:var(--accent)">P</span>Phobio<span class="sb-count" style="background:var(--success-bg);color:var(--success)">●</span></div>
+  `;
+}
+
+function renderCustomerSidebar() {
+  const items = [
+    { id: 'pending', label: 'Pending approvals', icon: '!', count: state.dealStatus === 'submitted' ? 1 : 0 },
+    { id: 'active', label: 'Active leases', icon: 'L', count: 4 },
+    { id: 'history', label: 'History', icon: 'H', count: 12 },
+    { id: 'team', label: 'Team', icon: 'T' }
+  ];
+  return `
+    <div class="sb-section">Acme Corp</div>
+    ${items.map(i => `<div class="sb-item ${i.id === state.customerNav ? 'on' : ''}" data-nav="${i.id}"><span class="sb-icon">${i.icon}</span>${i.label}${i.count !== undefined ? `<span class="sb-count">${i.count}</span>` : ''}</div>`).join('')}
+  `;
+}
+
+function renderDevicesPage() {
+  const opps = sortedOpportunities();
+  const sortLabel = sortOptions.find(s => s.id === state.sortBy).label;
+  const leaseLabel = leaseEndOptions.find(l => l.id === state.filters.leaseEnd).label;
+  const condLabel = conditionOptions.find(c => c.id === state.filters.condition).label;
+  const cust = customers[state.activeCustomer];
+  const { devices, total } = genDevices(state.activeCustomer);
+  const totals = getDealTotals();
+
+  return `
+    <div class="main-head">
+      <div>
+        <h1 class="main-title">Devices</h1>
+        <p class="main-sub">Smart-detected upgrade opportunities and per-customer device list.</p>
+      </div>
+      <div class="user-chip"><div class="user-avatar">SR</div><div><div class="user-name">Sam Reeves</div><div class="user-role">Reseller · Connection Inc.</div></div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-h">
+        <div class="section-h-l"><span class="dot"></span>Upgrade opportunities</div>
+        <div class="sort-control">
+          <span>Sort:</span>
+          <button class="sort-btn ${state.openPopover === 'sort' ? 'open' : ''}" id="sortBtn">${sortLabel} <span class="caret">▾</span></button>
+          ${state.openPopover === 'sort' ? `<div class="popover right"><div class="pop-head">Sort by</div>${sortOptions.map(o => `<div class="pop-opt ${o.id === state.sortBy ? 'sel' : ''}" data-sort="${o.id}"><span class="check">${o.id === state.sortBy ? '✓' : ''}</span>${o.label}</div>`).join('')}</div>` : ''}
+        </div>
+      </div>
+      <div class="subhead">${opps.length} new this week · highest urgency surfaced first</div>
+      <div class="card-body">
+        ${opps.map(o => {
+          const c = customers[o.customerId];
+          const isOpen = o.customerId === state.activeCustomer;
+          return `<div class="opp ${isOpen ? 'open' : ''}" data-cust="${o.customerId}"><div class="cust-mark ${c.mark}">${c.initial}</div><div class="opp-mid"><div class="opp-name"><span class="urgency-badge ${urgencyClass(o.daysToEnd)}">${o.daysToEnd} d</span>${c.name}</div><div class="opp-sub">${o.count} ${o.model} · "${o.condition}" condition</div></div><div class="opp-eq"><div class="opp-eq-val">+${fmt(o.equity)}</div><div class="opp-eq-lbl">Net positive equity</div></div><button class="btn-sm ${isOpen ? 'ghost' : ''}" data-cust="${o.customerId}">${isOpen ? 'Open' : 'Review'}</button></div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-h">
+        <div class="detail-h" style="margin-bottom:0">
+          <div class="cust-mark ${cust.mark}">${cust.initial}</div>
+          <div><div class="detail-name">${cust.name} · device list</div><div class="detail-sub">Org ID ${cust.orgId} · ${total} devices in this opportunity</div></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="filters">
+          <span class="tiny" style="margin-right:4px">Filters</span>
+          <span class="chip-wrap">
+            <span class="chip ${state.openPopover === 'leaseEnd' ? 'open' : ''}" data-pop="leaseEnd"><span class="chip-k">Lease end:</span><span class="chip-v">${leaseLabel}</span><span class="caret">▾</span></span>
+            ${state.openPopover === 'leaseEnd' ? `<div class="popover"><div class="pop-head">Lease end window</div>${leaseEndOptions.map(o => `<div class="pop-opt ${o.id === state.filters.leaseEnd ? 'sel' : ''}" data-lease="${o.id}"><span class="check">${o.id === state.filters.leaseEnd ? '✓' : ''}</span>${o.label}</div>`).join('')}</div>` : ''}
+          </span>
+          <span class="chip-wrap">
+            <span class="chip ${state.openPopover === 'condition' ? 'open' : ''}" data-pop="condition"><span class="chip-k">Condition:</span><span class="chip-v">${condLabel}</span><span class="caret">▾</span></span>
+            ${state.openPopover === 'condition' ? `<div class="popover"><div class="pop-head">Condition score</div>${conditionOptions.map(o => `<div class="pop-opt ${o.id === state.filters.condition ? 'sel' : ''}" data-cond="${o.id}"><span class="check">${o.id === state.filters.condition ? '✓' : ''}</span>${o.label}</div>`).join('')}</div>` : ''}
+          </span>
+          <span class="chip-wrap"><span class="chip dashed">+ Add filter</span></span>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr>
+              <th style="width:24px"><input type="checkbox" id="selectAll" ${devices.every(d => state.selectedSerials.has(d.serial)) ? 'checked' : ''}></th>
+              <th>Serial</th><th>Device</th><th>Ends in</th><th>RV</th><th>Payoff</th><th>Trade-in</th><th>Equity</th><th>Lender</th>
+            </tr></thead>
+            <tbody>
+              ${devices.map(d => `<tr><td><input type="checkbox" data-serial="${d.serial}" ${state.selectedSerials.has(d.serial) ? 'checked' : ''}></td><td>${d.serial}</td><td>${d.device}</td><td>${d.ends} d</td><td>${fmt(d.rv)}</td><td>${fmt(d.payoff)}</td><td>${fmt(d.tradeIn)}</td><td class="pos">+${fmt(d.equity)}</td><td><span class="lender-tag">JPM</span></td></tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div class="action-bar">
+          <div class="summary">Selected <b class="strong">${totals.count}</b> · Total payoff <b class="strong">${fmt(totals.payoff)}</b> · Total trade-in <b class="strong">${fmt(totals.tradeIn)}</b> · Net equity <b class="pos">+${fmt(totals.equity)}</b></div>
+          <button class="btn-p" id="createDealBtn" ${totals.count === 0 ? 'disabled' : ''}>Create new deal →</button>
+        </div>
+      </div>
+    </div>
+
+    ${state.dealStatus !== 'none' ? renderNewDealCard() : ''}
+  `;
+}
+
+function renderQuoteStep() {
+  if (state.quoteState === 'empty') {
+    return `
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">↑</div>
+        <div><strong>Upload reseller quote</strong> · PDF only</div>
+        <div class="tiny">The amount and line items will be auto-extracted from the quote</div>
+      </div>
+    `;
+  }
+  if (state.quoteState === 'uploading') {
+    return `
+      <div class="upload-progress">
+        <div class="spin"></div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">Uploading and parsing quote…</div>
+          <div class="tiny" style="margin-top:2px">Extracting line items and total amount</div>
+        </div>
+      </div>
+    `;
+  }
+  const cust = customers[state.activeCustomer];
+  const fname = cust.name.replace(/[. ]/g,'_') + '_iPhone17_Quote_Q2.pdf';
+  return `
+    <div class="uploaded">
+      <div class="uploaded-icon">✓</div>
+      <div class="uploaded-meta">
+        <div class="uploaded-name">${fname}</div>
+        <div class="uploaded-sub">312 KB · Quote total: ${fmt(state.amount)} · Auto-extracted</div>
+      </div>
+      <div class="uploaded-actions">
+        <button class="btn-link" id="viewQuoteBtn">View</button>
+        <button class="btn-link" id="replaceQuoteBtn">Replace</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderNewDealCard() {
+  const cust = customers[state.activeCustomer];
+  const totals = getDealTotals();
+  const submitted = state.dealStatus === 'submitted';
+  const monthly = state.monthlyCalculated;
+  const calcReady = monthly !== null && state.amount && state.term;
+  const opp = opportunities.find(o => o.customerId === state.activeCustomer);
+  const newDevice = opp ? opp.newDevice : 'iPhone 17 Pro 256GB';
+  const quoteUploaded = state.quoteState === 'uploaded';
+
+  return `
+    <div class="card" style="margin-top:18px">
+      <div class="section-h">
+        <div class="section-h-l"><span class="dot" style="background:var(--warn)"></span>New deal · upgrade <span class="proposal-tag" style="margin-left:8px">Proposal #${PROPOSAL_ID}</span></div>
+        <span class="tiny" id="dealAutoSave">${submitted ? 'Submitted just now' : 'Auto-saved just now'}</span>
+      </div>
+      ${submitted ? `<div class="success-banner on"><div class="i">✓</div><div><div class="success-banner-t">Deal submitted to customer</div><div class="success-banner-d">${cust.name}'s approver has been notified. Switch to the Customer portal (top right) to see their view.</div></div></div>` : ''}
+      <div class="step">
+        <div class="step-h"><span class="step-num done">1</span><span class="step-t">Customer & deal details</span><span class="step-help">From dashboard selection</span></div>
+        <div class="step-body">
+          <div class="row-grid">
+            <div class="field"><label>Customer</label><div class="val">${cust.name} · Org ID ${cust.orgId}</div></div>
+            <div class="field"><label>Reseller</label><div class="val">Connection Inc.</div></div>
+            <div class="field"><label>Deal type</label><div class="val">Lease upgrade</div></div>
+            <div class="field"><label>Primary contact</label><div class="val">${cust.contact}</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-h"><span class="step-num ${quoteUploaded ? 'done' : 'active'}">2</span><span class="step-t">Reseller quote</span><span class="step-help">${quoteUploaded ? 'Amount auto-extracted' : 'Upload PDF to continue'}</span></div>
+        <div class="step-body">${renderQuoteStep()}</div>
+      </div>
+      <div class="step">
+        <div class="step-h"><span class="step-num done">3</span><span class="step-t">Devices being upgraded</span><span class="step-help">${totals.count} devices</span></div>
+        <div class="step-body">
+          <div class="rollup">
+            <div class="mc"><div class="mc-label">Total payoff</div><div class="mc-val">${fmt(totals.payoff)}</div><div class="tiny" style="margin-top:4px">From lender</div></div>
+            <div class="mc"><div class="mc-label">Total trade-in</div><div class="mc-val">${fmt(totals.tradeIn)}</div><div class="tiny" style="margin-top:4px">Apkudo valuation</div></div>
+            <div class="mc"><div class="mc-label">Net equity</div><div class="equity-big">+${fmt(totals.equity)}</div></div>
+          </div>
+          <div class="note"><span class="i">i</span><span>Final trade-in confirmed on receipt by Phobio. Variance &gt;5% will trigger re-quote and customer notification.</span></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-h"><span class="step-num ${calcReady ? 'done' : (quoteUploaded ? 'active' : '')}">4</span><span class="step-t">Lease proposal</span><span class="step-help">${quoteUploaded ? 'Pre-filled from quote · adjust term and calculate' : 'Upload quote first'}</span></div>
+        <div class="step-body">
+          <div class="calc-row">
+            <div class="field"><label>New device</label><div class="val">${newDevice}</div></div>
+            <div class="field"><label>Count</label><div class="val">${totals.count}</div></div>
+            <div class="field"><label>Amount (USD)</label><div class="val" style="display:flex;align-items:center;gap:6px">${quoteUploaded ? fmt(state.amount) : '—'}<span class="tiny" style="margin-left:auto;font-size:10px;color:var(--text-3)">from quote</span></div></div>
+            <div class="field"><label>Term</label><select id="termSel" ${(submitted || !quoteUploaded) ? 'disabled' : ''}><option value="12" ${state.term==12?'selected':''}>12 mo</option><option value="24" ${state.term==24?'selected':''}>24 mo</option><option value="36" ${state.term==36?'selected':''}>36 mo</option><option value="48" ${state.term==48?'selected':''}>48 mo</option></select></div>
+            <button class="btn-p" id="calcBtn" ${(submitted || !quoteUploaded) ? 'disabled' : ''} style="height:40px;white-space:nowrap">Calculate</button>
+          </div>
+          ${calcReady ? `
+            <div class="calc-result">
+              <div><div class="calc-cell-l">Equity applied</div><div class="calc-cell-v pos">−${fmt(totals.equity)}</div></div>
+              <div><div class="calc-cell-l">Net amount financed</div><div class="calc-cell-v">${fmt(state.amount - totals.equity)}</div></div>
+              <div><div class="calc-cell-l">Monthly per device</div><div class="calc-cell-v big">${fmt(monthly)}</div></div>
+            </div>
+          ` : `<div class="calc-result"><div class="calc-empty" style="grid-column:1/-1">${quoteUploaded ? 'Press Calculate to compute the monthly per device.' : 'Upload the quote first to populate the amount.'}</div></div>`}
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-h"><span class="step-num">5</span><span class="step-t">Lender</span><span class="step-help">Optimized · best rate selected</span></div>
+        <div class="step-body">
+          <div class="lender-eval">
+            <div class="lender-eval-head">Evaluated ${lenderEvaluation.length} enrolled lenders</div>
+            <div class="lender-eval-list">
+              ${lenderEvaluation.map(l => `<div class="lender-eval-item ${l.win ? 'win' : ''}"><span class="check">${l.win ? '✓' : '·'}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.name}</span><span class="rate">${l.rate}</span></div>`).join('')}
+            </div>
+          </div>
+          <div class="lender-card">
+            <div class="lender-mark">JPM</div>
+            <div class="lender-info"><div class="lender-name">JPM Equipment Finance</div><div class="lender-status">Best rate · 5.4% APR · Pre-approved for ${cust.name}</div></div>
+            <span class="win-badge">Best rate</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-h"><span class="step-num">6</span><span class="step-t">Approval & execution</span><span class="step-help">Auto-tracked</span></div>
+        <div class="step-body">
+          <div class="flow">
+            <span class="pill done">Reseller submitted</span><span class="arr">→</span>
+            <span class="pill ${submitted ? 'active' : ''}">Customer approval</span><span class="arr">→</span>
+            <span class="pill">Lender contract</span><span class="arr">→</span>
+            <span class="pill">Sign contract</span><span class="arr">→</span>
+            <span class="pill">Apkudo lock-in</span><span class="arr">→</span>
+            <span class="pill">Phobio shipping labels</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-foot">
+        <span class="tiny">${submitted ? 'Awaiting customer response · ETA: customer typically approves within 24 hours' : 'Estimated time to customer offer: <b class="strong">~3 minutes</b>'}</span>
+        <div style="display:flex;gap:10px">
+          ${submitted ? `<button class="btn-g" id="newDealBtn">Start another deal</button>` : `<button class="btn-g" id="saveDraftBtn">Save draft</button><button class="btn-p" id="submitDealBtn" ${(!calcReady || !quoteUploaded) ? 'disabled' : ''}>Submit for approval</button>`}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCustomersPage() {
+  return `
+    <div class="main-head">
+      <div><h1 class="main-title">Customers</h1><p class="main-sub">All accounts under your reseller portfolio.</p></div>
+      <div class="user-chip"><div class="user-avatar">SR</div><div><div class="user-name">Sam Reeves</div><div class="user-role">Reseller</div></div></div>
+    </div>
+    <div class="card">
+      <div class="section-h"><div class="section-h-l"><span class="dot"></span>All customers</div><span class="tiny">${Object.keys(customers).length} active accounts</span></div>
+      <div class="card-body">
+        <div class="search-wrap"><span class="search-icon">⌕</span><input class="search-input" id="custSearch" placeholder="Search by name, Org ID, or contact" /></div>
+        <div class="cust-list" id="custList">
+          ${Object.values(customers).map(c => {
+            const opp = opportunities.find(o => o.customerId === c.id);
+            return `<div class="cust-row" data-cust="${c.id}"><div class="cust-mark ${c.mark}">${c.initial}</div><div style="flex:1;min-width:0"><div class="cust-name">${c.name}</div><div class="cust-meta">Org ID ${c.orgId} · ${c.contact} · ${c.activeDevices} active devices</div></div><span class="cust-tier tier-${c.tier.toLowerCase()}">${c.tier}</span>${opp ? `<span class="urgency-badge ${urgencyClass(opp.daysToEnd)}">${opp.daysToEnd}d · +${fmt(opp.equity)}</span>` : '<span class="tiny" style="color:var(--text-3)">No active opportunity</span>'}</div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderDealsPage() {
+  return `
+    <div class="main-head">
+      <div><h1 class="main-title">Deals</h1><p class="main-sub">All deals across customers.</p></div>
+      <div class="user-chip"><div class="user-avatar">SR</div><div><div class="user-name">Sam Reeves</div><div class="user-role">Reseller</div></div></div>
+    </div>
+    <div class="card">
+      <div class="section-h"><div class="section-h-l"><span class="dot"></span>All deals</div><span class="tiny">${deals.length} deals</span></div>
+      <div class="card-body">
+        <div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.4px;display:grid;grid-template-columns:1.2fr 2fr 1.5fr 0.8fr 1.5fr 1fr;gap:12px;padding:0 16px 8px"><div>Deal ID</div><div>Customer</div><div>Type</div><div>Devices</div><div>Status</div><div>Updated</div></div>
+        ${deals.map(d => `<div class="deal-row"><div class="deal-id">${d.id}</div><div>${d.customer}</div><div>${d.type}</div><div>${d.count}</div><div><span class="deal-status ${d.statusClass}">${d.status}</span></div><div class="tiny">${d.updated}</div></div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderPlaceholderPage(title, msg) {
+  return `<div class="main-head"><div><h1 class="main-title">${title}</h1><p class="main-sub">${msg}</p></div></div><div class="card"><div class="card-body"><div class="empty-state">Coming soon.</div></div></div>`;
+}
+
+function renderCustomerApp() {
+  if (state.customerNav === 'pending') return renderPending();
+  if (state.customerNav === 'active') return renderPlaceholderPage('Active leases', 'All currently active equipment leases at Acme Corp.');
+  if (state.customerNav === 'history') return renderPlaceholderPage('History', 'Completed and cancelled deals.');
+  return renderPlaceholderPage('Team', 'Manage who can approve deals on your team.');
+}
+
+function renderPending() {
+  if (state.dealStatus !== 'submitted') {
+    return `
+      <div class="main-head"><div><h1 class="main-title">Pending approvals</h1><p class="main-sub">Deals awaiting your review.</p></div>
+        <div class="user-chip"><div class="user-avatar" style="background:var(--purple-bg);color:var(--purple)">MR</div><div><div class="user-name">Maya Rodriguez</div><div class="user-role">VP IT · Acme Corp</div></div></div>
+      </div>
+      <div class="card"><div class="card-body"><div class="empty-state">No pending approvals.<br><br><span class="tiny">When the reseller submits a proposal, it appears here. Switch to the Reseller portal and submit a deal to populate this view.</span></div></div></div>
+    `;
+  }
+  const cust = customers[state.activeCustomer];
+  const totals = getDealTotals();
+  const monthly = state.monthlyCalculated || 0;
+  const totalOverTerm = monthly * totals.count * state.term;
+  const sel = totals.sel;
+  const showSel = sel.slice(0, 10);
+  const hiddenCount = sel.length - showSel.length;
+  const opp = opportunities.find(o => o.customerId === state.activeCustomer);
+  const oldDevice = opp ? opp.model : 'iPhone 15 Pro';
+  const newDevice = opp ? opp.newDevice : 'iPhone 17 Pro 256GB';
+
+  let stepLabels = {
+    'pending': 'Step 1 of 3 · Review and approve proposal',
+    'cfo-approved': 'Step 2 of 3 · Awaiting lender approval',
+    'lender-approved': 'Step 3 of 3 · Sign contract',
+    'signed': 'Complete'
+  };
+  const sl = stepLabels[state.cfoStep];
+
+  return `
+    <div class="main-head">
+      <div>
+        <h1 class="main-title">Apple device upgrade</h1>
+        <p class="main-sub">From Connection Inc. (your reseller) · Submitted just now · <span class="proposal-tag">Proposal #${PROPOSAL_ID}</span></p>
+      </div>
+      <div class="user-chip"><div class="user-avatar" style="background:var(--purple-bg);color:var(--purple)">MR</div><div><div class="user-name">Maya Rodriguez</div><div class="user-role">VP IT · Acme Corp</div></div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-h">
+        <div class="section-h-l"><span class="dot" style="background:${state.cfoStep === 'signed' ? 'var(--success)' : 'var(--accent)'}"></span>${sl}</div>
+        <span class="tiny">Proposal #${PROPOSAL_ID}</span>
+      </div>
+      <div class="card-body" style="padding-top:0">
+        <div class="flow" style="margin-top:0">
+          <span class="pill ${['cfo-approved','lender-approved','signed'].includes(state.cfoStep) ? 'done' : 'active'}">Review proposal</span>
+          <span class="arr">→</span>
+          <span class="pill ${['lender-approved','signed'].includes(state.cfoStep) ? 'done' : (state.cfoStep === 'cfo-approved' ? 'active' : '')}">Lender approval</span>
+          <span class="arr">→</span>
+          <span class="pill ${state.cfoStep === 'signed' ? 'done' : (state.cfoStep === 'lender-approved' ? 'active' : '')}">Sign contract</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-h"><div class="section-h-l">Proposal summary</div></div>
+      <div class="proposal-hero">
+        <div class="proposal-side" style="background:var(--accent-bg)">
+          <h3 style="color:var(--accent)">You will return</h3>
+          <div class="big" style="color:var(--accent)">${totals.count} × ${oldDevice}</div>
+          <div class="sub" style="color:var(--accent)">Trade-in value: ${fmt(totals.tradeIn)}</div>
+        </div>
+        <div class="proposal-side" style="background:var(--success-bg)">
+          <h3 style="color:var(--success)">You will receive</h3>
+          <div class="big" style="color:var(--success)">${totals.count} × ${newDevice}</div>
+          <div class="sub" style="color:var(--success)">${state.term}-month lease · ${fmt(monthly)} per device / month</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-h"><div class="section-h-l">Devices being returned</div><span class="tiny">${totals.count} ${oldDevice}</span></div>
+      <div class="return-list">
+        <div class="return-tbl-h"><div>Device</div><div>Serial</div><div>Trade-in</div><div>Outstanding</div></div>
+        ${showSel.map(d => `<div class="return-row"><div class="device">${d.device}</div><div class="serial">${d.serial}</div><div>${fmt(d.tradeIn)}</div><div>${fmt(d.payoff)}</div></div>`).join('')}
+        ${hiddenCount > 0 ? `<div style="text-align:center;color:var(--text-2);font-size:12px;padding:10px">+ ${hiddenCount} more devices</div>` : ''}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-h"><div class="section-h-l">Cost breakdown</div></div>
+      <div class="card-body">
+        <table class="cost-table">
+          <tr><td>Lease amount (${totals.count} × ${newDevice})</td><td>${fmt(state.amount)}</td></tr>
+          <tr><td>Term</td><td>${state.term} months</td></tr>
+          <tr><td>Equity applied (from device returns)</td><td class="pos">−${fmt(totals.equity)}</td></tr>
+          <tr><td>Net amount financed</td><td>${fmt(state.amount - totals.equity)}</td></tr>
+          <tr><td>Monthly per device</td><td>${fmt(monthly)}</td></tr>
+          <tr><td>Total monthly (all ${totals.count} devices)</td><td>${fmt(monthly * totals.count)}</td></tr>
+          <tr><td>Total cost over ${state.term} months</td><td>${fmt(totalOverTerm)}</td></tr>
+        </table>
+      </div>
+    </div>
+
+    ${state.cfoStep === 'pending' ? `
+      <div class="card">
+        <div class="card-foot" style="border-top:none;border-radius:16px">
+          <span class="tiny">Approving sends this to JPM Equipment Finance for lender approval.</span>
+          <div style="display:flex;gap:10px">
+            <button class="btn-sm danger" id="declineBtn">Decline</button>
+            <button class="btn-sm ghost" id="requestChangesBtn">Request changes</button>
+            <button class="btn-success" id="approveProposalBtn">Approve proposal</button>
+          </div>
+        </div>
+      </div>
+    ` : ''}
+
+    ${state.cfoStep === 'cfo-approved' ? `
+      <div class="card" style="margin-bottom:16px">
+        <div class="section-h"><div class="section-h-l"><span class="dot" style="background:var(--accent)"></span>Lender review in progress</div><span class="tiny">JPM Equipment Finance</span></div>
+        <div class="card-body">
+          <div class="note"><span class="i">i</span><span>Your approval is locked in. JPM is reviewing the lease agreement. This typically takes <b style="color:inherit;font-weight:600">up to 24 hours</b>. You'll be notified by email when the contract is ready to sign.</span></div>
+          <div style="display:flex;justify-content:center;padding:20px"><button class="btn-success" id="simulateLenderApproveBtn">Simulate lender approval (demo)</button></div>
+        </div>
+      </div>
+    ` : ''}
+
+    ${state.cfoStep === 'lender-approved' ? `
+      <div class="card" style="margin-bottom:16px">
+        <div class="section-h"><div class="section-h-l"><span class="dot" style="background:var(--success)"></span>Sign contract</div><span class="tiny">Master Lease Agreement #${PROPOSAL_ID}</span></div>
+        <div class="card-body">
+          <div class="note" style="background:var(--success-bg);color:var(--success)"><span class="i" style="background:var(--success)">✓</span><span>JPM Equipment Finance has approved. Sign below via DocuSign to complete the lease.</span></div>
+          <div class="ds-frame">
+            <div class="ds-toolbar">
+              <span class="ds-logo">DocuSign</span>
+              <span class="ds-toolbar-meta">Master Lease Agreement #${PROPOSAL_ID} · 1 signature required</span>
+              <span class="tiny" style="color:#6B5800">Secure</span>
+            </div>
+            <div class="ds-doc">
+              <div class="ds-paper">
+                <h4>Master Lease Agreement #${PROPOSAL_ID}</h4>
+                <div class="clause"><strong>Lessor:</strong> JPM Equipment Finance · <strong>Lessee:</strong> ${cust.name} (Org ID ${cust.orgId})</div>
+                <div class="clause"><strong>Equipment:</strong> ${totals.count} × ${newDevice}</div>
+                <div class="clause"><strong>Term:</strong> ${state.term} months · <strong>Monthly per device:</strong> ${fmt(monthly)} · <strong>Total monthly:</strong> ${fmt(monthly * totals.count)}</div>
+                <div class="clause"><strong>Trade-in credit applied:</strong> ${fmt(totals.equity)}</div>
+                <div class="clause" style="margin-top:14px;font-size:11px;color:var(--text-2)">By signing below, the lessee agrees to the standard JPM Equipment Finance Master Lease Agreement terms, including monthly payment schedule, end-of-lease options, and equipment return obligations as described in Schedule A.</div>
+                <div class="ds-sig-area" style="position:relative">
+                  <span class="ds-sig-tag" style="top:-22px">Sign</span>
+                  <div style="flex:1">
+                    <div class="ds-sig-line ${state.signatureName ? 'signed' : ''}">${state.signatureName || ''}</div>
+                    <div>Authorized signatory · ${cust.contact}</div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;color:var(--text-2)">Date</div>
+                    <div style="font-size:12px">${new Date().toLocaleDateString()}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ds-action">
+              <input type="text" id="sigInput" placeholder="Type your full name to adopt and sign" value="${state.signatureName}" />
+              <button class="ds-sign-btn" id="signBtn" ${!state.signatureName ? 'disabled' : ''}>Adopt and sign</button>
+            </div>
+            <div class="ds-foot">Signed via DocuSign · An audit trail will be emailed to all parties.</div>
+          </div>
+        </div>
+      </div>
+    ` : ''}
+
+    ${state.cfoStep === 'signed' ? `
+      <div class="card" style="margin-bottom:16px">
+        <div class="section-h"><div class="section-h-l"><span class="dot" style="background:var(--success)"></span>All complete</div><span class="tiny">Signed via DocuSign just now</span></div>
+        <div class="card-body">
+          <div class="ds-frame">
+            <div class="ds-toolbar"><span class="ds-logo">DocuSign</span><span class="ds-toolbar-meta">Completed · ${new Date().toLocaleDateString()}</span><span class="tiny" style="color:var(--success);font-weight:600">✓ Signed</span></div>
+            <div class="ds-doc">
+              <div class="ds-paper">
+                <h4>Master Lease Agreement #${PROPOSAL_ID}</h4>
+                <div class="clause" style="color:var(--success);font-weight:600">✓ All parties signed</div>
+                <div class="ds-sig-area">
+                  <div style="flex:1">
+                    <div class="ds-sig-line signed">${state.signatureName}</div>
+                    <div>${cust.contact} · Signed ${new Date().toLocaleDateString()}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ds-foot">Audit trail emailed · Contract on file with JPM Equipment Finance</div>
+          </div>
+          <div style="margin-top:16px">
+            <div class="rollup">
+              <div class="mc"><div class="mc-label">Contract</div><div class="mc-val" style="font-size:14px">On file with JPM</div><div class="tiny" style="margin-top:4px">Master Lease Agreement #${PROPOSAL_ID}</div></div>
+              <div class="mc"><div class="mc-label">New devices</div><div class="mc-val" style="font-size:14px">Shipping in 2–3 days</div><div class="tiny" style="margin-top:4px">${totals.count} × ${newDevice}</div></div>
+              <div class="mc"><div class="mc-label">Return devices</div><div class="mc-val" style="font-size:14px">Labels emailed</div><div class="tiny" style="margin-top:4px">Phobio · ship within 14 days</div></div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:center;padding:20px 0 0"><button class="btn-g" id="cfoResetBtn">Return to pending</button></div>
+        </div>
+      </div>
+    ` : ''}
+  `;
+}
+
+function renderArchPage() {
+  return `
+    <div class="main-head"><div><h1 class="main-title">Architecture</h1><p class="main-sub">Device lifecycle management is the orchestration layer between resellers, customers, valuation (Apkudo), the lender (JPM), and reverse logistics (Phobio).</p></div></div>
+    <div class="card">
+      <div style="padding:32px 20px">
+        <svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;max-width:800px;margin:0 auto">
+          <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#A1A1A6"/></marker></defs>
+          <g><rect x="80" y="20" width="200" height="64" rx="12" fill="#F5F5F7" stroke="rgba(0,0,0,0.08)"/><text x="180" y="48" text-anchor="middle" font-family="-apple-system" font-size="15" font-weight="600" fill="#1D1D1F">Reseller</text><text x="180" y="68" text-anchor="middle" font-family="-apple-system" font-size="12" fill="#6E6E73">opens upgrade opportunities</text></g>
+          <g><rect x="520" y="20" width="200" height="64" rx="12" fill="#F5F5F7" stroke="rgba(0,0,0,0.08)"/><text x="620" y="48" text-anchor="middle" font-family="-apple-system" font-size="15" font-weight="600" fill="#1D1D1F">Enterprise customer</text><text x="620" y="68" text-anchor="middle" font-family="-apple-system" font-size="12" fill="#6E6E73">approves &amp; signs (DocuSign)</text></g>
+          <g><rect x="80" y="150" width="640" height="86" rx="14" fill="#E8F1FB" stroke="#0066CC"/><text x="400" y="186" text-anchor="middle" font-family="-apple-system" font-size="18" font-weight="600" fill="#0066CC">Device lifecycle management · Jifiti orchestration layer</text><text x="400" y="210" text-anchor="middle" font-family="-apple-system" font-size="13" fill="#0066CC">device data · valuation · lender selection · logistics in one pane</text></g>
+          <g><rect x="40" y="300" width="200" height="64" rx="12" fill="#F5F5F7" stroke="rgba(0,0,0,0.08)"/><text x="140" y="328" text-anchor="middle" font-family="-apple-system" font-size="15" font-weight="600" fill="#1D1D1F">Apkudo</text><text x="140" y="348" text-anchor="middle" font-family="-apple-system" font-size="12" fill="#6E6E73">trade-in valuation</text></g>
+          <g><rect x="300" y="300" width="200" height="64" rx="12" fill="#F5F5F7" stroke="rgba(0,0,0,0.08)"/><text x="400" y="328" text-anchor="middle" font-family="-apple-system" font-size="15" font-weight="600" fill="#1D1D1F">JPM (lender)</text><text x="400" y="348" text-anchor="middle" font-family="-apple-system" font-size="12" fill="#6E6E73">payoff + new contract</text></g>
+          <g><rect x="560" y="300" width="200" height="64" rx="12" fill="#F5F5F7" stroke="rgba(0,0,0,0.08)"/><text x="660" y="328" text-anchor="middle" font-family="-apple-system" font-size="15" font-weight="600" fill="#1D1D1F">Phobio</text><text x="660" y="348" text-anchor="middle" font-family="-apple-system" font-size="12" fill="#6E6E73">reverse logistics + intake</text></g>
+          <line x1="180" y1="84" x2="180" y2="148" stroke="#A1A1A6" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="620" y1="148" x2="620" y2="86" stroke="#A1A1A6" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="140" y1="238" x2="140" y2="298" stroke="#A1A1A6" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="400" y1="238" x2="400" y2="298" stroke="#A1A1A6" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="660" y1="238" x2="660" y2="298" stroke="#A1A1A6" stroke-width="1.5" marker-end="url(#arr)"/>
+        </svg>
+      </div>
+    </div>
+  `;
+}
+
+function render() {
+  const root = document.getElementById('portalRoot');
+  const isReseller = state.app === 'reseller';
+  const sidebar = isReseller ? renderResellerSidebar() : renderCustomerSidebar();
+  let content;
+  if (isReseller) {
+    if (state.resellerNav === 'devices') content = renderDevicesPage();
+    else if (state.resellerNav === 'customers') content = renderCustomersPage();
+    else if (state.resellerNav === 'deals') content = renderDealsPage();
+    else if (state.resellerNav === 'reports') content = renderPlaceholderPage('Reports', 'Portfolio insights, conversion rates, equity trends.');
+    else content = renderPlaceholderPage('Settings', 'Manage your account, integrations and notifications.');
+  } else {
+    content = renderCustomerApp();
+  }
+  root.innerHTML = `<div class="portal"><aside class="sidebar">${sidebar}</aside><main class="main-area">${content}</main></div>`;
+}
+
+function openQuoteModal() {
+  const cust = customers[state.activeCustomer];
+  const totals = getDealTotals();
+  const opp = opportunities.find(o => o.customerId === state.activeCustomer);
+  const newDevice = opp ? opp.newDevice : 'iPhone 17 Pro 256GB';
+  const sku = newDevice.includes('iPhone 17 Pro') ? 'MTUW3LL/A' : (newDevice.includes('iPhone 17') ? 'MTUC3LL/A' : 'MWGM3LL/A');
+  const unit = opp ? opp.unitPrice : 1199;
+  const total = unit * totals.count;
+  const modal = document.getElementById('quoteModal');
+  modal.innerHTML = `
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Quote preview · ${cust.name.replace(/[. ]/g,'_')}_iPhone17_Quote_Q2.pdf</h2>
+        <button class="modal-close" id="closeQuoteModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="quote-page">
+          <div class="quote-header">
+            <div class="quote-reseller"><strong>Connection Inc.</strong><br>Apple Authorized Reseller · AAR-1842<br>245 Park Ave, New York, NY 10167<br>quotes@connection.com · (212) 555-0148</div>
+            <div class="quote-meta">Quote #Q-2026-3041<br>Issue: ${new Date().toLocaleDateString()}<br>Valid through: ${new Date(Date.now()+30*86400000).toLocaleDateString()}</div>
+          </div>
+          <div class="quote-customer"><strong>Bill to:</strong> ${cust.name}<br>Org ID: ${cust.orgId}<br>1 ${cust.name.split(' ')[0]} Way, San Francisco, CA 94105<br>Attn: ${cust.contact}</div>
+          <table class="quote-items">
+            <thead><tr><th>SKU</th><th>Description</th><th>Qty</th><th>Unit price</th><th>Total</th></tr></thead>
+            <tbody>
+              <tr><td>${sku}</td><td>${newDevice} · Natural Titanium</td><td>${totals.count}</td><td>${fmt(unit)}.00</td><td>${fmt(total)}.00</td></tr>
+              <tr><td>S8888LL/A</td><td>AppleCare+ for iPhone (24mo) — bundled</td><td>${totals.count}</td><td>$0.00</td><td>$0.00</td></tr>
+            </tbody>
+          </table>
+          <div class="quote-totals">
+            Subtotal: ${fmt(total)}.00<br>
+            Tax: not applicable for lease-financed orders<br>
+            Freight: $0.00<br>
+            <strong>Total: ${fmt(total)}.00</strong>
+          </div>
+          <div class="quote-foot">Payment terms: Lease-financed via JPM Equipment Finance · Authorized signature: ____________ · Contact: Sam Reeves · Connection Inc.</div>
+        </div>
+      </div>
+    </div>
+  `;
+  modal.classList.add('on');
+}
+
+function closeQuoteModal() {
+  document.getElementById('quoteModal').classList.remove('on');
+}
+
+function startUpload() {
+  state.quoteState = 'uploading';
+  render();
+  setTimeout(() => {
+    state.quoteState = 'uploaded';
+    state.amount = getQuoteAmount();
+    state.monthlyCalculated = null;
+    render();
+    showToast(`Quote parsed · amount auto-extracted: ${fmt(state.amount)}`);
+  }, 1100);
+}
+
+document.getElementById('appSwitcher').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-app]');
+  if (!btn) return;
+  state.app = btn.dataset.app;
+  document.querySelectorAll('#appSwitcher button').forEach(b => b.classList.toggle('on', b === btn));
+  state.openPopover = null;
+  render();
+});
+
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'closeQuoteModal' || e.target.classList.contains('modal-overlay')) { closeQuoteModal(); return; }
+
+  const sbItem = e.target.closest('.sb-item[data-nav]');
+  if (sbItem) {
+    if (state.app === 'reseller') state.resellerNav = sbItem.dataset.nav;
+    else state.customerNav = sbItem.dataset.nav;
+    state.openPopover = null;
+    render(); return;
+  }
+
+  if (state.openPopover && !e.target.closest('.popover') && !e.target.closest('.chip[data-pop]') && !e.target.closest('#sortBtn')) {
+    state.openPopover = null; render(); return;
+  }
+
+  const sortBtn = e.target.closest('#sortBtn');
+  if (sortBtn) { state.openPopover = state.openPopover === 'sort' ? null : 'sort'; render(); return; }
+
+  const sortOpt = e.target.closest('[data-sort]');
+  if (sortOpt) { state.sortBy = sortOpt.dataset.sort; state.openPopover = null; render(); showToast('Sort updated'); return; }
+
+  const popChip = e.target.closest('[data-pop]');
+  if (popChip) { state.openPopover = state.openPopover === popChip.dataset.pop ? null : popChip.dataset.pop; render(); return; }
+
+  const leaseOpt = e.target.closest('[data-lease]');
+  if (leaseOpt) { const v = leaseOpt.dataset.lease; state.filters.leaseEnd = v === 'custom' ? 'custom' : parseInt(v, 10); state.openPopover = null; render(); showToast('Filter updated'); return; }
+
+  const condOpt = e.target.closest('[data-cond]');
+  if (condOpt) { state.filters.condition = condOpt.dataset.cond; state.openPopover = null; render(); showToast('Filter updated'); return; }
+
+  const reviewBtn = e.target.closest('button[data-cust]');
+  if (reviewBtn) { setActiveCustomer(reviewBtn.dataset.cust); return; }
+
+  const oppRow = e.target.closest('.opp[data-cust]');
+  if (oppRow && !e.target.closest('button')) { setActiveCustomer(oppRow.dataset.cust); return; }
+
+  const custRow = e.target.closest('.cust-row[data-cust]');
+  if (custRow) { setActiveCustomer(custRow.dataset.cust); return; }
+
+  if (e.target.id === 'createDealBtn') {
+    if (state.selectedSerials.size === 0) return;
+    state.dealStatus = 'draft';
+    state.quoteState = 'empty';
+    state.amount = 0;
+    state.monthlyCalculated = null;
+    render();
+    showToast('Deal draft created · upload the reseller quote to continue');
+    return;
+  }
+  if (e.target.id === 'uploadZone' || e.target.closest('#uploadZone')) { startUpload(); return; }
+  if (e.target.id === 'replaceQuoteBtn') { state.quoteState = 'empty'; state.amount = 0; state.monthlyCalculated = null; render(); return; }
+  if (e.target.id === 'viewQuoteBtn') { openQuoteModal(); return; }
+
+  if (e.target.id === 'calcBtn') {
+    state.monthlyCalculated = calculateMonthly();
+    render();
+    showToast(state.monthlyCalculated ? `Monthly per device: ${fmt(state.monthlyCalculated)}` : 'Calculation failed');
+    return;
+  }
+  if (e.target.id === 'submitDealBtn') { state.dealStatus = 'submitted'; state.cfoStep = 'pending'; render(); showToast('Deal submitted · switch to Customer portal to approve'); return; }
+  if (e.target.id === 'saveDraftBtn') { showToast('Draft saved'); return; }
+  if (e.target.id === 'newDealBtn') { state.dealStatus = 'none'; state.cfoStep = 'pending'; state.signatureName = ''; state.quoteState = 'empty'; state.amount = 0; state.monthlyCalculated = null; render(); return; }
+
+  if (e.target.id === 'approveProposalBtn') { state.cfoStep = 'cfo-approved'; render(); showToast('Proposal approved · sent to lender'); return; }
+  if (e.target.id === 'declineBtn') { showToast('Proposal declined (demo)'); return; }
+  if (e.target.id === 'requestChangesBtn') { showToast('Changes requested (demo)'); return; }
+  if (e.target.id === 'simulateLenderApproveBtn') { state.cfoStep = 'lender-approved'; render(); showToast('Lender approved · ready to sign'); return; }
+  if (e.target.id === 'signBtn') { state.cfoStep = 'signed'; render(); showToast('Signed via DocuSign · all complete'); return; }
+  if (e.target.id === 'cfoResetBtn') { state.cfoStep = 'pending'; state.signatureName = ''; render(); return; }
+});
+
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'selectAll') {
+    const { devices } = genDevices(state.activeCustomer);
+    if (e.target.checked) devices.forEach(d => state.selectedSerials.add(d.serial));
+    else devices.forEach(d => state.selectedSerials.delete(d.serial));
+    render(); return;
+  }
+  if (e.target.dataset.serial) {
+    if (e.target.checked) state.selectedSerials.add(e.target.dataset.serial);
+    else state.selectedSerials.delete(e.target.dataset.serial);
+    render(); return;
+  }
+  if (e.target.id === 'termSel') { state.term = parseInt(e.target.value, 10); state.monthlyCalculated = null; render(); return; }
+});
+
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'sigInput') {
+    state.signatureName = e.target.value;
+    const signBtn = document.getElementById('signBtn');
+    if (signBtn) signBtn.disabled = !state.signatureName;
+    const sigLine = document.querySelector('.ds-sig-line');
+    if (sigLine) {
+      sigLine.textContent = state.signatureName;
+      if (state.signatureName) sigLine.classList.add('signed');
+      else sigLine.classList.remove('signed');
+    }
+    return;
+  }
+  if (e.target.id === 'custSearch') {
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll('#custList .cust-row').forEach(row => {
+      const txt = row.textContent.toLowerCase();
+      row.style.display = txt.includes(q) ? '' : 'none';
+    });
+  }
+});
+
+state.selectedSerials = new Set(genDevices('acme').devices.map(d => d.serial));
+render();
+</script>
+
+</body>
+</html>
