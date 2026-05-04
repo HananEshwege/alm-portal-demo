@@ -949,7 +949,7 @@ function genDevices(custId) {
     devices.push({
       serial: 'F2' + prefix + num + '···' + seed,
       device: opp.model + variant,
-      ends: opp.daysToEnd + (i % 5),
+      ends: opp.daysToEnd + (i % 3),
       rv, payoff, tradeIn,
       equity: tradeIn - payoff,
       condition
@@ -1038,6 +1038,20 @@ function sortedOpportunities() {
 }
 function urgencyClass(d) { return d <= 30 ? 'crit' : ''; }
 
+function matchesFilters(d) {
+  const condF = state.filters.condition;
+  if (condF === 'excellent' && d.condition !== 'Excellent') return false;
+  if (condF === 'good-or-better' && d.condition === 'Fair') return false;
+  const leaseF = state.filters.leaseEnd;
+  if (typeof leaseF === 'number' && d.ends > leaseF) return false;
+  return true;
+}
+
+function applyFilterCleanup() {
+  const matching = new Set(genDevices(state.activeCustomer).devices.filter(matchesFilters).map(d => d.serial));
+  state.selectedSerials = new Set([...state.selectedSerials].filter(s => matching.has(s)));
+}
+
 function getDealTotals() {
   const { devices } = genDevices(state.activeCustomer);
   const sel = devices.filter(d => state.selectedSerials.has(d.serial));
@@ -1069,7 +1083,13 @@ function calculateMonthly() {
 
 function setActiveCustomer(custId) {
   state.activeCustomer = custId;
-  state.selectedSerials = new Set(genDevices(custId).devices.map(d => d.serial));
+  const opp = opportunities.find(o => o.customerId === custId);
+  if (opp) {
+    const thresholds = [30, 60, 90, 120];
+    state.filters.leaseEnd = thresholds.find(t => opp.daysToEnd <= t) || 120;
+  }
+  const allDevices = genDevices(custId).devices;
+  state.selectedSerials = new Set(allDevices.filter(matchesFilters).map(d => d.serial));
   state.resellerNav = 'devices';
   state.openPopover = null;
   render();
@@ -1112,7 +1132,9 @@ function renderDevicesPage() {
   const leaseLabel = leaseEndOptions.find(l => l.id === state.filters.leaseEnd).label;
   const condLabel = conditionOptions.find(c => c.id === state.filters.condition).label;
   const cust = customers[state.activeCustomer];
-  const { devices, total } = genDevices(state.activeCustomer);
+  const { devices: allDevices, total } = genDevices(state.activeCustomer);
+  const devices = allDevices.filter(matchesFilters);
+  const filteredOut = allDevices.length - devices.length;
   const totals = getDealTotals();
 
   return `
@@ -1166,11 +1188,12 @@ function renderDevicesPage() {
         <div class="tbl-wrap">
           <table class="tbl">
             <thead><tr>
-              <th style="width:24px"><input type="checkbox" id="selectAll" ${devices.every(d => state.selectedSerials.has(d.serial)) ? 'checked' : ''}></th>
+              <th style="width:24px"><input type="checkbox" id="selectAll" ${devices.length > 0 && devices.every(d => state.selectedSerials.has(d.serial)) ? 'checked' : ''}></th>
               <th>Serial</th><th>Device</th><th>Condition</th><th>Ends in</th><th>RV</th><th>Payoff</th><th>Trade-in</th><th>Equity</th><th>Lender</th>
             </tr></thead>
             <tbody>
-              ${devices.map(d => `<tr><td><input type="checkbox" data-serial="${d.serial}" ${state.selectedSerials.has(d.serial) ? 'checked' : ''}></td><td>${d.serial}</td><td>${d.device}</td><td><span class="cond-tag cond-${d.condition.toLowerCase()}">${d.condition}</span></td><td>${d.ends} d</td><td>${fmt(d.rv)}</td><td>${fmt(d.payoff)}</td><td>${fmt(d.tradeIn)}</td><td class="pos">+${fmt(d.equity)}</td><td><span class="lender-tag">JPM</span></td></tr>`).join('')}
+              ${devices.length > 0 ? devices.map(d => `<tr><td><input type="checkbox" data-serial="${d.serial}" ${state.selectedSerials.has(d.serial) ? 'checked' : ''}></td><td>${d.serial}</td><td>${d.device}</td><td><span class="cond-tag cond-${d.condition.toLowerCase()}">${d.condition}</span></td><td>${d.ends} d</td><td>${fmt(d.rv)}</td><td>${fmt(d.payoff)}</td><td>${fmt(d.tradeIn)}</td><td class="pos">+${fmt(d.equity)}</td><td><span class="lender-tag">JPM</span></td></tr>`).join('') : `<tr class="empty-row"><td colspan="10">No devices match the current filters · ${filteredOut} hidden</td></tr>`}
+              ${devices.length > 0 && filteredOut > 0 ? `<tr class="empty-row"><td colspan="10">+ ${filteredOut} more devices hidden by current filters</td></tr>` : ''}
             </tbody>
           </table>
         </div>
@@ -1698,10 +1721,10 @@ document.addEventListener('click', (e) => {
   if (popChip) { state.openPopover = state.openPopover === popChip.dataset.pop ? null : popChip.dataset.pop; render(); return; }
 
   const leaseOpt = e.target.closest('[data-lease]');
-  if (leaseOpt) { const v = leaseOpt.dataset.lease; state.filters.leaseEnd = v === 'custom' ? 'custom' : parseInt(v, 10); state.openPopover = null; render(); showToast('Filter updated'); return; }
+  if (leaseOpt) { const v = leaseOpt.dataset.lease; state.filters.leaseEnd = v === 'custom' ? 'custom' : parseInt(v, 10); state.openPopover = null; applyFilterCleanup(); render(); showToast('Filter updated'); return; }
 
   const condOpt = e.target.closest('[data-cond]');
-  if (condOpt) { state.filters.condition = condOpt.dataset.cond; state.openPopover = null; render(); showToast('Filter updated'); return; }
+  if (condOpt) { state.filters.condition = condOpt.dataset.cond; state.openPopover = null; applyFilterCleanup(); render(); showToast('Filter updated'); return; }
 
   const reviewBtn = e.target.closest('button[data-cust]');
   if (reviewBtn) { setActiveCustomer(reviewBtn.dataset.cust); return; }
@@ -1750,9 +1773,9 @@ document.addEventListener('click', (e) => {
 
 document.addEventListener('change', (e) => {
   if (e.target.id === 'selectAll') {
-    const { devices } = genDevices(state.activeCustomer);
-    if (e.target.checked) devices.forEach(d => state.selectedSerials.add(d.serial));
-    else devices.forEach(d => state.selectedSerials.delete(d.serial));
+    const visible = genDevices(state.activeCustomer).devices.filter(matchesFilters);
+    if (e.target.checked) visible.forEach(d => state.selectedSerials.add(d.serial));
+    else visible.forEach(d => state.selectedSerials.delete(d.serial));
     render(); return;
   }
   if (e.target.dataset.serial) {
@@ -1785,7 +1808,7 @@ document.addEventListener('input', (e) => {
   }
 });
 
-state.selectedSerials = new Set(genDevices('acme').devices.map(d => d.serial));
+state.selectedSerials = new Set(genDevices('acme').devices.filter(matchesFilters).map(d => d.serial));
 render();
 </script>
 
