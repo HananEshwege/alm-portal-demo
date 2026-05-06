@@ -882,8 +882,8 @@ input[type="checkbox"] { accent-color: #1D1D1F; cursor: pointer; }
       <div class="brand-sub">Powered by Jifiti</div>
     </div>
     <div class="app-switcher" id="appSwitcher">
-      <button class="on" data-app="reseller">Reseller portal</button>
-      <button data-app="customer">Customer portal</button>
+      <button class="on" data-app="reseller">Salesperson view</button>
+      <button data-app="customer">Customer view</button>
     </div>
   </div>
 </div>
@@ -985,11 +985,11 @@ const conditionOptions = [
 ];
 
 const lenderEvaluation = [
-  { id: 'jpm', name: 'JPM Equipment Finance', rate: '5.4% APR', win: true },
-  { id: 'citi', name: 'Citi Equipment', rate: '5.7% APR' },
-  { id: 'bofa', name: 'BofA Asset Finance', rate: '5.9% APR' },
-  { id: 'dll', name: 'DLL Group', rate: '6.1% APR' },
-  { id: 'capital', name: 'Capital One Bus.', rate: '6.3% APR' }
+  { id: 'a', name: 'Funder A', rate: '5.4% APR', win: true },
+  { id: 'b', name: 'Funder B', rate: '5.7% APR' },
+  { id: 'c', name: 'Funder C', rate: '5.9% APR' },
+  { id: 'd', name: 'Funder D', rate: '6.1% APR' },
+  { id: 'e', name: 'Funder E', rate: '6.3% APR' }
 ];
 
 const PROPOSAL_ID = 'D-2026-0148';
@@ -1107,9 +1107,11 @@ function renderResellerSidebar() {
     <div class="sb-section">Workspace</div>
     ${items.map(i => `<div class="sb-item ${i.id === state.resellerNav ? 'on' : ''}" data-nav="${i.id}"><span class="sb-icon">${i.icon}</span>${i.label}${i.count !== undefined ? `<span class="sb-count">${i.count}</span>` : ''}</div>`).join('')}
     <div class="sb-section" style="margin-top:18px">Connections</div>
-    <div class="sb-item"><span class="sb-icon" style="background:var(--accent-bg);color:var(--accent)">A</span>Apkudo<span class="sb-count" style="background:var(--success-bg);color:var(--success)">●</span></div>
-    <div class="sb-item"><span class="sb-icon" style="background:var(--accent-bg);color:var(--accent)">J</span>JPM<span class="sb-count" style="background:var(--success-bg);color:var(--success)">●</span></div>
-    <div class="sb-item"><span class="sb-icon" style="background:var(--accent-bg);color:var(--accent)">P</span>Phobio<span class="sb-count" style="background:var(--success-bg);color:var(--success)">●</span></div>
+    <div class="sb-item"><span class="sb-icon" style="background:var(--accent-bg);color:var(--accent)">C</span>CRM (Salesforce)<span class="sb-count" style="background:var(--success-bg);color:var(--success)">●</span></div>
+    <div class="sb-item"><span class="sb-icon" style="background:var(--accent-bg);color:var(--accent)">V</span>Valuation partner<span class="sb-count" style="background:var(--success-bg);color:var(--success)">●</span></div>
+    <div class="sb-item"><span class="sb-icon" style="background:var(--accent-bg);color:var(--accent)">F</span>Funders (5)<span class="sb-count" style="background:var(--success-bg);color:var(--success)">●</span></div>
+    <div class="sb-item"><span class="sb-icon" style="background:var(--accent-bg);color:var(--accent)">L</span>Logistics partner<span class="sb-count" style="background:var(--success-bg);color:var(--success)">●</span></div>
+    <div class="sb-item"><span class="sb-icon" style="background:var(--accent-bg);color:var(--accent)">D</span>DocuSign<span class="sb-count" style="background:var(--success-bg);color:var(--success)">●</span></div>
   `;
 }
 
@@ -1189,16 +1191,16 @@ function renderDevicesPage() {
           <table class="tbl">
             <thead><tr>
               <th style="width:24px"><input type="checkbox" id="selectAll" ${devices.length > 0 && devices.every(d => state.selectedSerials.has(d.serial)) ? 'checked' : ''}></th>
-              <th>Serial</th><th>Device</th><th>Condition</th><th>Ends in</th><th>RV</th><th>Payoff</th><th>Trade-in</th><th>Equity</th><th>Lender</th>
+              <th>Serial</th><th>Device</th><th>Condition</th><th>Ends in</th><th>RV</th><th>Payoff</th><th>Market value</th><th>Opportunity</th>
             </tr></thead>
             <tbody>
-              ${devices.length > 0 ? devices.map(d => `<tr><td><input type="checkbox" data-serial="${d.serial}" ${state.selectedSerials.has(d.serial) ? 'checked' : ''}></td><td>${d.serial}</td><td>${d.device}</td><td><span class="cond-tag cond-${d.condition.toLowerCase()}">${d.condition}</span></td><td>${d.ends} d</td><td>${fmt(d.rv)}</td><td>${fmt(d.payoff)}</td><td>${fmt(d.tradeIn)}</td><td class="pos">+${fmt(d.equity)}</td><td><span class="lender-tag">JPM</span></td></tr>`).join('') : `<tr class="empty-row"><td colspan="10">No devices match the current filters · ${filteredOut} hidden</td></tr>`}
-              ${devices.length > 0 && filteredOut > 0 ? `<tr class="empty-row"><td colspan="10">+ ${filteredOut} more devices hidden by current filters</td></tr>` : ''}
+              ${devices.length > 0 ? devices.map(d => `<tr><td><input type="checkbox" data-serial="${d.serial}" ${state.selectedSerials.has(d.serial) ? 'checked' : ''}></td><td>${d.serial}</td><td>${d.device}</td><td><span class="cond-tag cond-${d.condition.toLowerCase()}">${d.condition}</span></td><td>${d.ends} d</td><td>${fmt(d.rv)}</td><td>${fmt(d.payoff)}</td><td>${fmt(d.tradeIn)}</td><td class="pos">+${fmt(d.equity)}</td></tr>`).join('') : `<tr class="empty-row"><td colspan="9">No devices match the current filters · ${filteredOut} hidden</td></tr>`}
+              ${devices.length > 0 && filteredOut > 0 ? `<tr class="empty-row"><td colspan="9">+ ${filteredOut} more devices hidden by current filters</td></tr>` : ''}
             </tbody>
           </table>
         </div>
         <div class="action-bar">
-          <div class="summary">Selected <b class="strong">${totals.count}</b> · Total payoff <b class="strong">${fmt(totals.payoff)}</b> · Total trade-in <b class="strong">${fmt(totals.tradeIn)}</b> · Net equity <b class="pos">+${fmt(totals.equity)}</b></div>
+          <div class="summary">Selected <b class="strong">${totals.count}</b> · Total payoff <b class="strong">${fmt(totals.payoff)}</b> · Total market value <b class="strong">${fmt(totals.tradeIn)}</b> · Net opportunity <b class="pos">+${fmt(totals.equity)}</b></div>
           <button class="btn-p" id="createDealBtn" ${totals.count === 0 ? 'disabled' : ''}>Create new deal →</button>
         </div>
       </div>
@@ -1259,7 +1261,7 @@ function renderNewDealCard() {
   return `
     <div class="card" id="newDealSection" style="margin-top:18px;scroll-margin-top:80px">
       <div class="section-h">
-        <div class="section-h-l"><span class="dot" style="background:var(--warn)"></span>New deal · upgrade <span class="proposal-tag" style="margin-left:8px">Proposal #${PROPOSAL_ID}</span></div>
+        <div class="section-h-l"><span class="dot" style="background:var(--warn)"></span>New deal · like-for-like renewal <span class="proposal-tag" style="margin-left:8px">Proposal #${PROPOSAL_ID}</span></div>
         <span class="tiny" id="dealAutoSave">${submitted ? 'Submitted just now' : 'Auto-saved just now'}</span>
       </div>
       ${submitted ? `<div class="success-banner on"><div class="i">✓</div><div><div class="success-banner-t">Deal submitted to customer</div><div class="success-banner-d">${cust.name}'s approver has been notified. Switch to the Customer portal (top right) to see their view.</div></div></div>` : ''}
@@ -1269,7 +1271,7 @@ function renderNewDealCard() {
           <div class="row-grid">
             <div class="field"><label>Customer</label><div class="val">${cust.name} · Org ID ${cust.orgId}</div></div>
             <div class="field"><label>Reseller</label><div class="val">Connection Inc.</div></div>
-            <div class="field"><label>Deal type</label><div class="val">Lease upgrade</div></div>
+            <div class="field"><label>Deal type</label><div class="val">Like-for-like renewal</div></div>
             <div class="field"><label>Primary contact</label><div class="val">${cust.contact}</div></div>
           </div>
         </div>
@@ -1279,14 +1281,14 @@ function renderNewDealCard() {
         <div class="step-body">${renderQuoteStep()}</div>
       </div>
       <div class="step">
-        <div class="step-h"><span class="step-num done">3</span><span class="step-t">Devices being upgraded</span><span class="step-help">${totals.count} devices</span></div>
+        <div class="step-h"><span class="step-num done">3</span><span class="step-t">Devices being renewed</span><span class="step-help">Like-for-like · ${totals.count} devices</span></div>
         <div class="step-body">
           <div class="rollup">
-            <div class="mc"><div class="mc-label">Total payoff</div><div class="mc-val">${fmt(totals.payoff)}</div><div class="tiny" style="margin-top:4px">From lender</div></div>
-            <div class="mc"><div class="mc-label">Total trade-in</div><div class="mc-val">${fmt(totals.tradeIn)}</div><div class="tiny" style="margin-top:4px">Apkudo valuation</div></div>
-            <div class="mc"><div class="mc-label">Net equity</div><div class="equity-big">+${fmt(totals.equity)}</div></div>
+            <div class="mc"><div class="mc-label">Total payoff</div><div class="mc-val">${fmt(totals.payoff)}</div><div class="tiny" style="margin-top:4px">From funder</div></div>
+            <div class="mc"><div class="mc-label">Total market value</div><div class="mc-val">${fmt(totals.tradeIn)}</div><div class="tiny" style="margin-top:4px">Valuation partner (e.g., Apkudo)</div></div>
+            <div class="mc"><div class="mc-label">Net opportunity</div><div class="equity-big">+${fmt(totals.equity)}</div></div>
           </div>
-          <div class="note"><span class="i">i</span><span>Final trade-in confirmed on receipt by Phobio. Variance &gt;5% will trigger re-quote and customer notification.</span></div>
+          <div class="note"><span class="i">i</span><span>Final market value confirmed on receipt by logistics partner. Variance &gt;5% triggers re-quote and customer notification. Can also be sent to back office for manual processing.</span></div>
         </div>
       </div>
       <div class="step">
@@ -1309,31 +1311,32 @@ function renderNewDealCard() {
         </div>
       </div>
       <div class="step">
-        <div class="step-h"><span class="step-num">5</span><span class="step-t">Lender</span><span class="step-help">Optimized · best rate selected</span></div>
+        <div class="step-h"><span class="step-num">5</span><span class="step-t">Funder</span><span class="step-help">Optimized · best rate selected · routed via AFS</span></div>
         <div class="step-body">
           <div class="lender-eval">
-            <div class="lender-eval-head">Evaluated ${lenderEvaluation.length} enrolled lenders</div>
+            <div class="lender-eval-head">Evaluated ${lenderEvaluation.length} enrolled funders</div>
             <div class="lender-eval-list">
               ${lenderEvaluation.map(l => `<div class="lender-eval-item ${l.win ? 'win' : ''}"><span class="check">${l.win ? '✓' : '·'}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.name}</span><span class="rate">${l.rate}</span></div>`).join('')}
             </div>
           </div>
           <div class="lender-card">
-            <div class="lender-mark">JPM</div>
-            <div class="lender-info"><div class="lender-name">JPM Equipment Finance</div><div class="lender-status">Best rate · 5.4% APR · Pre-approved for ${cust.name}</div></div>
+            <div class="lender-mark">AFS</div>
+            <div class="lender-info"><div class="lender-name">Apple Financial Services</div><div class="lender-status">Best rate selected · 5.4% APR · Pre-approved for ${cust.name}</div></div>
             <span class="win-badge">Best rate</span>
           </div>
+          <div class="tiny" style="margin-top:8px">Funder selection is internal to AFS. Customer sees Apple Financial Services regardless of which funder backs the contract.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-h"><span class="step-num">6</span><span class="step-t">Approval & execution</span><span class="step-help">Auto-tracked</span></div>
         <div class="step-body">
           <div class="flow">
-            <span class="pill done">Reseller submitted</span><span class="arr">→</span>
+            <span class="pill done">Submitted to CRM</span><span class="arr">→</span>
             <span class="pill ${submitted ? 'active' : ''}">Customer approval</span><span class="arr">→</span>
-            <span class="pill">Lender contract</span><span class="arr">→</span>
+            <span class="pill">AFS funder contract</span><span class="arr">→</span>
             <span class="pill">Sign contract</span><span class="arr">→</span>
-            <span class="pill">Apkudo lock-in</span><span class="arr">→</span>
-            <span class="pill">Phobio shipping labels</span>
+            <span class="pill">Valuation lock-in</span><span class="arr">→</span>
+            <span class="pill">Logistics + shipping labels</span>
           </div>
         </div>
       </div>
@@ -1426,8 +1429,8 @@ function renderPending() {
   return `
     <div class="main-head">
       <div>
-        <h1 class="main-title">Apple device upgrade</h1>
-        <p class="main-sub">From Connection Inc. (your reseller) · Submitted just now · <span class="proposal-tag">Proposal #${PROPOSAL_ID}</span></p>
+        <h1 class="main-title">Apple device renewal</h1>
+        <p class="main-sub">Like-for-like renewal · Submitted just now · <span class="proposal-tag">Proposal #${PROPOSAL_ID}</span></p>
       </div>
       <div class="user-chip"><div class="user-avatar" style="background:var(--purple-bg);color:var(--purple)">MR</div><div><div class="user-name">Maya Rodriguez</div><div class="user-role">VP IT · Acme Corp</div></div></div>
     </div>
@@ -1454,12 +1457,12 @@ function renderPending() {
         <div class="proposal-side" style="background:var(--accent-bg)">
           <h3 style="color:var(--accent)">You will return</h3>
           <div class="big" style="color:var(--accent)">${totals.count} × ${oldDevice}</div>
-          <div class="sub" style="color:var(--accent)">Trade-in value: ${fmt(totals.tradeIn)}</div>
+          <div class="sub" style="color:var(--accent)">Current market value: ${fmt(totals.tradeIn)}</div>
         </div>
         <div class="proposal-side" style="background:var(--success-bg)">
           <h3 style="color:var(--success)">You will receive</h3>
           <div class="big" style="color:var(--success)">${totals.count} × ${newDevice}</div>
-          <div class="sub" style="color:var(--success)">${state.term}-month lease · ${fmt(monthly)} per device / month</div>
+          <div class="sub" style="color:var(--success)">Like-for-like renewal · ${state.term}-month lease · ${fmt(monthly)} per device / month</div>
         </div>
       </div>
     </div>
@@ -1479,7 +1482,7 @@ function renderPending() {
         <table class="cost-table">
           <tr><td>Lease amount (${totals.count} × ${newDevice})</td><td>${fmt(state.amount)}</td></tr>
           <tr><td>Term</td><td>${state.term} months</td></tr>
-          <tr><td>Equity applied (from device returns)</td><td class="pos">−${fmt(totals.equity)}</td></tr>
+          <tr><td>Returned-device credit (current market value − payoff)</td><td class="pos">−${fmt(totals.equity)}</td></tr>
           <tr><td>Net amount financed</td><td>${fmt(state.amount - totals.equity)}</td></tr>
           <tr><td>Monthly per device</td><td>${fmt(monthly)}</td></tr>
           <tr><td>Total monthly (all ${totals.count} devices)</td><td>${fmt(monthly * totals.count)}</td></tr>
@@ -1491,7 +1494,7 @@ function renderPending() {
     ${state.cfoStep === 'pending' ? `
       <div class="card">
         <div class="card-foot" style="border-top:none;border-radius:16px">
-          <span class="tiny">Approving sends this to JPM Equipment Finance for lender approval.</span>
+          <span class="tiny">Approving routes this to Apple Financial Services for funder approval.</span>
           <div style="display:flex;gap:10px">
             <button class="btn-sm danger" id="declineBtn">Decline</button>
             <button class="btn-sm ghost" id="requestChangesBtn">Request changes</button>
@@ -1503,10 +1506,10 @@ function renderPending() {
 
     ${state.cfoStep === 'cfo-approved' ? `
       <div class="card" style="margin-bottom:16px">
-        <div class="section-h"><div class="section-h-l"><span class="dot" style="background:var(--accent)"></span>Lender review in progress</div><span class="tiny">JPM Equipment Finance</span></div>
+        <div class="section-h"><div class="section-h-l"><span class="dot" style="background:var(--accent)"></span>Funder review in progress</div><span class="tiny">Apple Financial Services</span></div>
         <div class="card-body">
-          <div class="note"><span class="i">i</span><span>Your approval is locked in. JPM is reviewing the lease agreement. This typically takes <b style="color:inherit;font-weight:600">up to 24 hours</b>. You'll be notified by email when the contract is ready to sign.</span></div>
-          <div style="display:flex;justify-content:center;padding:20px"><button class="btn-success" id="simulateLenderApproveBtn">Simulate lender approval (demo)</button></div>
+          <div class="note"><span class="i">i</span><span>Your approval is locked in. AFS is reviewing the lease agreement with the selected funder. This typically takes <b style="color:inherit;font-weight:600">up to 24 hours</b>, or as little as 15 minutes when fully automated. You'll be notified by email when the contract is ready to sign.</span></div>
+          <div style="display:flex;justify-content:center;padding:20px"><button class="btn-success" id="simulateLenderApproveBtn">Simulate funder approval (demo)</button></div>
         </div>
       </div>
     ` : ''}
@@ -1515,7 +1518,7 @@ function renderPending() {
       <div class="card" style="margin-bottom:16px">
         <div class="section-h"><div class="section-h-l"><span class="dot" style="background:var(--success)"></span>Sign contract</div><span class="tiny">Master Lease Agreement #${PROPOSAL_ID}</span></div>
         <div class="card-body">
-          <div class="note" style="background:var(--success-bg);color:var(--success)"><span class="i" style="background:var(--success)">✓</span><span>JPM Equipment Finance has approved. Sign below via DocuSign to complete the lease.</span></div>
+          <div class="note" style="background:var(--success-bg);color:var(--success)"><span class="i" style="background:var(--success)">✓</span><span>Apple Financial Services has approved. Sign below via DocuSign to complete the renewal.</span></div>
           <div class="ds-frame">
             <div class="ds-toolbar">
               <span class="ds-logo">DocuSign</span>
@@ -1525,11 +1528,11 @@ function renderPending() {
             <div class="ds-doc">
               <div class="ds-paper">
                 <h4>Master Lease Agreement #${PROPOSAL_ID}</h4>
-                <div class="clause"><strong>Lessor:</strong> JPM Equipment Finance · <strong>Lessee:</strong> ${cust.name} (Org ID ${cust.orgId})</div>
-                <div class="clause"><strong>Equipment:</strong> ${totals.count} × ${newDevice}</div>
+                <div class="clause"><strong>Lessor:</strong> Apple Financial Services · <strong>Lessee:</strong> ${cust.name} (Org ID ${cust.orgId})</div>
+                <div class="clause"><strong>Equipment:</strong> ${totals.count} × ${newDevice} (like-for-like renewal)</div>
                 <div class="clause"><strong>Term:</strong> ${state.term} months · <strong>Monthly per device:</strong> ${fmt(monthly)} · <strong>Total monthly:</strong> ${fmt(monthly * totals.count)}</div>
-                <div class="clause"><strong>Trade-in credit applied:</strong> ${fmt(totals.equity)}</div>
-                <div class="clause" style="margin-top:14px;font-size:11px;color:var(--text-2)">By signing below, the lessee agrees to the standard JPM Equipment Finance Master Lease Agreement terms, including monthly payment schedule, end-of-lease options, and equipment return obligations as described in Schedule A.</div>
+                <div class="clause"><strong>Returned-device credit applied:</strong> ${fmt(totals.equity)}</div>
+                <div class="clause" style="margin-top:14px;font-size:11px;color:var(--text-2)">By signing below, the lessee agrees to the standard Apple Financial Services Master Lease Agreement terms, including monthly payment schedule, end-of-term options, and equipment return obligations as described in Schedule A.</div>
                 <div class="ds-sig-area" style="position:relative">
                   <span class="ds-sig-tag" style="top:-22px">Sign</span>
                   <div style="flex:1">
@@ -1571,13 +1574,13 @@ function renderPending() {
                 </div>
               </div>
             </div>
-            <div class="ds-foot">Audit trail emailed · Contract on file with JPM Equipment Finance</div>
+            <div class="ds-foot">Audit trail emailed · Contract on file with Apple Financial Services</div>
           </div>
           <div style="margin-top:16px">
             <div class="rollup">
-              <div class="mc"><div class="mc-label">Contract</div><div class="mc-val" style="font-size:14px">On file with JPM</div><div class="tiny" style="margin-top:4px">Master Lease Agreement #${PROPOSAL_ID}</div></div>
+              <div class="mc"><div class="mc-label">Contract</div><div class="mc-val" style="font-size:14px">On file with AFS</div><div class="tiny" style="margin-top:4px">Master Lease Agreement #${PROPOSAL_ID}</div></div>
               <div class="mc"><div class="mc-label">New devices</div><div class="mc-val" style="font-size:14px">Shipping in 2–3 days</div><div class="tiny" style="margin-top:4px">${totals.count} × ${newDevice}</div></div>
-              <div class="mc"><div class="mc-label">Return devices</div><div class="mc-val" style="font-size:14px">Labels emailed</div><div class="tiny" style="margin-top:4px">Phobio · ship within 14 days</div></div>
+              <div class="mc"><div class="mc-label">Return devices</div><div class="mc-val" style="font-size:14px">Labels emailed</div><div class="tiny" style="margin-top:4px">Logistics partner · ship within 14 days</div></div>
             </div>
           </div>
           <div style="display:flex;justify-content:center;padding:20px 0 0"><button class="btn-g" id="cfoResetBtn">Return to pending</button></div>
