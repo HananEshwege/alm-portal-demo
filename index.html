@@ -332,8 +332,8 @@ const state={
     {customer:"Meridian Health LLC",invoice:"INV-2199-08",contract:"ALM-2199",days:37,amount:620,stage:"30-day notice"},
   ],
   almFleet:[
-    {cust:"Acme Corp",deal:"ALM-2207",p:"mbp",model:'MacBook Pro 14" (M1 Pro, 2021)',qty:24,eot:"2026-09-14",cond:"Excellent"},
-    {cust:"Acme Corp",deal:"ALM-2210",p:"ip16p",model:"iPhone 14 Pro",qty:40,eot:"2027-02-01",cond:"Good"},
+    {cust:"Vertex Manufacturing",deal:"ALM-2207",p:"mbp",model:'MacBook Pro 14" (M1 Pro, 2021)',qty:24,eot:"2026-09-14",cond:"Excellent"},
+    {cust:"Atlas Logistics",deal:"ALM-2210",p:"ip16p",model:"iPhone 14 Pro",qty:40,eot:"2027-02-01",cond:"Good"},
     {cust:"Meridian Health LLC",deal:"ALM-2131",p:"ip16p",model:"iPhone 17 Pro",qty:60,eot:"2029-08-01",cond:"Excellent"},
     {cust:"Vertex Manufacturing",deal:"ALM-2128",p:"mba",model:"MacBook Air M4",qty:45,eot:"2029-07-01",cond:"Good"},
     {cust:"Atlas Logistics",deal:"ALM-2119",p:"ipadpro",model:'iPad Pro 12.9" (M2, 2022)',qty:30,eot:"2026-08-20",cond:"Good"},
@@ -353,13 +353,14 @@ const state={
     {id:"UP-3002",customer:"Meridian Health LLC",devices:60,from:"iPhone 15 Pro",to:"iPhone 17 Pro",stage:4},
   ],
   almFulfillment:[
-    {id:"ALM-2131",customer:"Meridian Health LLC",device:"iPhone 17 Pro",qty:60,stage:"Funding disbursed"},
     {id:"ALM-2128",customer:"Vertex Manufacturing",device:"MacBook Air M4",qty:45,stage:"Shipping labels created"},
     {id:"ALM-2140",customer:"Contoso Ltd",device:"iPhone 17 128GB",qty:40,stage:"Reseller fulfilling"},
   ],
   almInvoices:[
     {id:"INV-2207-08",customer:"Vertex Manufacturing",contract:"ALM-2207",date:"2026-08-01",amount:1120,status:"Due"},
     {id:"INV-2199-08",customer:"Meridian Health LLC",contract:"ALM-2199",date:"2026-08-01",amount:620,status:"Overdue",days:37,stage:"30-day notice"},
+    {id:"INV-2131-08",customer:"Meridian Health LLC",contract:"ALM-2131",date:"2026-08-01",amount:2400,status:"Due"},
+    {id:"INV-2131-07",customer:"Meridian Health LLC",contract:"ALM-2131",date:"2026-07-01",amount:2400,status:"Paid"},
     {id:"INV-2210-08",customer:"Atlas Logistics",contract:"ALM-2210",date:"2026-08-01",amount:1100,status:"Due"},
     {id:"INV-2207-07",customer:"Vertex Manufacturing",contract:"ALM-2207",date:"2026-07-01",amount:1120,status:"Due"},
     {id:"INV-2199-07",customer:"Meridian Health LLC",contract:"ALM-2199",date:"2026-07-01",amount:620,status:"Paid"},
@@ -412,6 +413,7 @@ const state={
     {id:"ALM-2207",p:"mbp",product:'MacBook Pro 14"',devices:24,term:36,monthly:1120,start:"2023-09-14",eot:"2026-09-14",customer:"Vertex Manufacturing",reseller:"Connection Inc.",overdue:true},
     {id:"ALM-2210",p:"ip16p",product:"iPhone 14 Pro",devices:40,term:24,monthly:1100,start:"2023-02-01",eot:"2026-02-01",customer:"Atlas Logistics",reseller:"Connection Inc.",overdue:true},
     {id:"ALM-2199",p:"ipadpro",product:"iPad (Pro + Air)",devices:30,term:36,monthly:620,start:"2023-08-02",eot:"2026-08-02",customer:"Meridian Health LLC",reseller:"Connection Inc.",overdue:true},
+    {id:"ALM-2131",p:"ip16p",product:"iPhone 17 Pro",devices:60,term:36,monthly:2400,start:"2026-08-01",eot:"2029-08-01",customer:"Meridian Health LLC",reseller:"Connection Inc."},
   ],
   invoices:[
     {id:"INV-2207-07",contract:"ALM-2207",date:"2026-07-01",amount:1120,status:"Due"},
@@ -663,7 +665,7 @@ function captureCreq(){document.querySelectorAll("[data-cq]").forEach(el=>{let v
 function captureAlloc(){if(!state.creq)return;state.creq.upAlloc=state.creq.upAlloc||{};document.querySelectorAll("[data-am]").forEach(el=>{const gi=el.dataset.am,ri=Number(el.dataset.ai),f=el.dataset.af;if(!state.creq.upAlloc[gi])state.creq.upAlloc[gi]=[];if(!state.creq.upAlloc[gi][ri])state.creq.upAlloc[gi][ri]={};let v=el.value;if(f==="qty")v=Number(v);state.creq.upAlloc[gi][ri][f]=v;if(f==="qty"&&v>0)state.creq.upAlloc[gi][ri]._touched=true;});}
 function pickReqAction(a){const r=state.creq;r.action=a;if((a==="upgrade"||a==="return"||a==="extend")&&!r.contract)r.contract=state.contracts[0].id;if(a==="new"&&!(r.lines&&r.lines.length))r.lines=[{productId:state.products[0].id,qty:50}];render();}
 function setOnBehalf(v){state.onBehalfCustomer=v;}
-const CUST_TENANTS=[{name:"Meridian Health LLC",user:"Jordan Maxwell",role:"IT Procurement",custId:"C-00020915"},{name:"Atlas Logistics",user:"Sam Okafor",role:"Fleet & Devices",custId:"C-00027788"},{name:"Vertex Manufacturing",user:"Dana Lindgren",role:"IT Operations",custId:"C-00030514"}];
+const CUST_TENANTS=[{name:"Meridian Health LLC",user:"Jordan Maxwell",role:"IT Procurement",custId:"C-00020915"},{name:"Atlas Logistics",user:"Sam Okafor",role:"Fleet & Devices",custId:"C-00027788"},{name:"Vertex Manufacturing",user:"Dana Lindgren",role:"IT Operations",custId:"C-00030514"},{name:"Acme Corp",user:"Alex Rivera",role:"IT Procurement",custId:"C-00041902"}];
 function myContracts(){return state.contracts.filter(c=>(c.customer||"")===state.me.business);}
 function myContractIds(){return myContracts().map(c=>c.id);}
 function myAssets(){const ids=myContractIds();return (state.assets||[]).filter(a=>ids.indexOf(a.contract)>=0);}
@@ -880,7 +882,7 @@ const VIEWS={
   <div class="help" style="padding:6px 16px 12px">Showing ${rows.length} sample assets · fleet total ${myContracts().reduce((s,c)=>s+(c.devices||0),0).toLocaleString()}.</div></div>`;},
 "customer:contracts":()=>{const cRows=myContracts().map(c=>{const st=devStatus(c.eot);const ipr=state.deviceRequests.find(x=>x.contract===c.id&&!x.fulfilled&&(x.action==="upgrade"||x.action==="return"||x.action==="extend"));const statusCell=ipr?`<span class="badge b-amber">${REQ_ACT[ipr.action]} in progress</span> <span class="tiny" style="color:var(--accent2);cursor:pointer" data-act="reqOpen" data-id="${ipr.id}">${ipr.id} →</span>`:`<span class="badge ${st.c}">${st.t}</span>`;const actionCell=ipr?`<button class="btn ghost sm" data-act="reqOpen" data-id="${ipr.id}">View request</button>`:(daysTo(c.eot)<=90?`<button class="btn sm" data-act="startEot" data-id="${c.id}">Start EOT</button>`:'<span class="tiny muted">Open →</span>');return `<tr class="click" data-act="openContract" data-id="${c.id}"><td><b>${c.id}</b></td><td>${c.product}</td><td>${c.devices.toLocaleString()}</td><td>${c.term} mo</td><td>${money(c.monthly)}</td><td>${statusCell}</td><td style="text-align:right">${actionCell}</td></tr>`;}).join("");
   return `<div class="row" style="justify-content:space-between"><div><h1 class="page">Contracts</h1><p class="sub" style="margin-bottom:0">Your active lease agreements. New and end-of-term requests are tracked under Requests.</p></div><button class="btn" data-act="reqNew">＋ Submit new request</button></div><div style="height:15px"></div>
-  <div class="panel"><table><thead><tr><th>Contract</th><th>Product</th><th>Devices</th><th>Term</th><th>Monthly</th><th>Status</th><th></th></tr></thead><tbody>${cRows}</tbody></table></div>
+  <div class="panel"><table><thead><tr><th>Contract</th><th>Product</th><th>Devices</th><th>Term</th><th>Monthly</th><th>Status</th><th></th></tr></thead><tbody>${cRows||'<tr><td colspan="7" class="empty">No active contracts yet. Submit a new request to get started.</td></tr>'}</tbody></table></div>
   <div class="help" style="padding:4px 4px"><span style="color:var(--accent2);cursor:pointer" data-go="returns">View all requests →</span></div>`;},
 "customer:contractDetail":()=>{const c=state.contracts.find(x=>x.id===state.selectedContract);if(!c)return "";const cc=contractCalc(c);const _tr=custTaxRate();const _tx=Math.round(c.monthly*_tr.rate);let sched="";for(let i=0;i<Math.min(6,cc.remaining);i++){const d=new Date(2026,7+i,1);sched+=`<tr><td>${d.toLocaleDateString('en-US',{month:'short',year:'numeric'})}</td><td>${money(c.monthly)}</td><td>${money(_tx)}</td><td>${money(c.monthly+_tx)}</td><td><span class="badge b-grey">Upcoming</span></td></tr>`;}
   return `<button class="btn ghost sm" data-act="backContracts">← Contracts</button><h1 class="page" style="margin-top:12px">${c.id}</h1><p class="sub">${c.product} · ${c.devices.toLocaleString()} devices · ${c.term}-mo term · started ${c.start}</p>
@@ -1492,7 +1494,7 @@ $("#content").addEventListener("click",e=>{
   if(act==="goBilling"){state.view="billing";render();return;}
   if(act==="dlRentalInv"){const blob=new Blob([buildLeasePDF(rentalInvoicePdfLines(rentalInvoiceModel()))],{type:"application/pdf"});const url=URL.createObjectURL(blob);const link=document.createElement("a");link.href=url;link.download="ALM-Rental-Invoice.pdf";document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast("Downloading rental invoice PDF");return;}
   if(act==="payRetry"){toast("Payment retried (illustrative) - thank you");return;}
-  if(act==="reqNew"){state.creq={action:null};state.view="reqflow";render();return;}
+  if(act==="reqNew"){state.actingOnBehalf=false;state.onBehalfCustomer="";state.creq={action:null};state.view="reqflow";render();return;}
   if(act==="almReqOnBehalf"){state.actingOnBehalf=true;state.persona="customer";state.creq={action:null};state.view="reqflow";render();toast("Operations - creating a request on behalf of "+(state.me?state.me.business:"the customer"));return;}
   if(act==="startReqOnBehalf"){const cust=($("#oCust")||{}).value||(state.customerProfiles[0]&&state.customerProfiles[0].legal);state.actingOnBehalf=true;state.onBehalfCustomer=cust;state.persona="alm";state.creq={action:null};state.view="reqflow";render();return;}
   if(act==="almNewRequest"){state.actingOnBehalf=true;state.onBehalfCustomer="";state.creq={action:null};state.persona="alm";state.view="reqflow";render();return;}
